@@ -105,3 +105,23 @@ def test_agent_esg_water_and_resident_endpoints() -> None:
     res_data = r_res.json()
     assert len(res_data["forecast_24h"]) == 24
     assert len(res_data["resident_comfort"]["recommended_quiet_hours"]) == 3
+
+
+def test_vision_step_pet_and_stray_animal_governance_and_purge() -> None:
+    """Verify PET_AND_STRAY_ANIMAL_POOL detects dog/cat, triggers Strata Nudge at 15s, and 100% VFD bio-purge."""
+    r15 = client.post(
+        "/api/v1/vision/step",
+        json={
+            "scenario": "PET_AND_STRAY_ANIMAL_POOL",
+            "target_elapsed_sec": 15.0,
+            "reset": True,
+        },
+    )
+    assert r15.status_code == 200
+    d15 = r15.json()
+    detected_labels = {o["label"] for o in d15["detected_objects"]}
+    assert {"dog", "cat"}.issubset(detected_labels)
+    assert d15["system1_trace"]["overall_state"] == "NUDGE_REQUIRED"
+    assert d15["esg_metrics"]["animal_events"] == 2
+    assert d15["esg_metrics"]["recommended_vfd_speed_pct"] == 100.0
+    assert any("Haiwan peliharaan" in (t.get("audio_tts_text") or "") for t in d15["tool_logs"])

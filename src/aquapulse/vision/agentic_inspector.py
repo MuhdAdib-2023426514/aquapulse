@@ -107,6 +107,17 @@ def _verify_with_opencv_heuristics(
         )
         return True, 0.91, summary
 
+    if track.suspected_violation == ViolationType.PET_OR_STRAY_ANIMAL:
+        animals = [
+            obj.label for obj in (detected_objects or []) if obj.label in {"dog", "cat", "bird"}
+        ]
+        animals_str = ", ".join(animals) if animals else "quadrupedal animal contour"
+        summary = (
+            f"Tier-1 face-masked ROI (2x zoom) + YOLO26 COCO class 15/16 verified animal "
+            f"({animals_str}) in pool/deck zone; Strata Management Act by-law & bio-hygiene alert."
+        )
+        return True, 0.95, summary
+
     return False, 0.95, "Tier-1 face-masked ROI inspected: compliant swimwear, no violation."
 
 

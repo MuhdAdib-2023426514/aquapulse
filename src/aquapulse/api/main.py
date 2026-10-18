@@ -160,10 +160,12 @@ class AquaPulseRuntimeService:
         food_count = sum(
             1 for t in tracks if t.suspected_violation == ViolationType.FOOD_DRINK_POOLSIDE
         )
+        animal_count = sum(1 for o in objects if o.label in {"dog", "cat", "bird"})
         esg_metrics = compute_instantaneous_esg_metrics(
             bather_count=len(tracks),
             cotton_violations=cotton_count,
             food_drink_events=food_count,
+            animal_events=animal_count,
         )
         resident_status = self.forecaster.build_resident_comfort_status(
             tracks=tracks,

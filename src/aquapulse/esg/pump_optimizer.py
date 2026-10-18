@@ -21,6 +21,7 @@ def compute_contamination_score(
     bather_count: int,
     cotton_violations: int = 0,
     food_drink_events: int = 0,
+    animal_events: int = 0,
     duration_hours: float = 1.0,
     config: PoolConfig = DEFAULT_CONFIG,
 ) -> float:
@@ -29,6 +30,7 @@ def compute_contamination_score(
         float(max(0, bather_count)) * max(0.1, duration_hours)
         + config.contamination_w_cotton * float(max(0, cotton_violations))
         + config.contamination_w_food_drink * float(max(0, food_drink_events))
+        + config.contamination_w_animal * float(max(0, animal_events))
     )
     return round(score, 2)
 
@@ -37,11 +39,12 @@ def recommend_vfd_speed_pct(
     contamination_score: float,
     bather_count: int,
     previous_contamination_score: float = 0.0,
+    animal_events: int = 0,
     config: PoolConfig = DEFAULT_CONFIG,
 ) -> float:
     """Map bather load and contamination score to continuous VFD pump speed (40%..100%)."""
-    # Post-peak high-filtration purge cycle after a heavy crowd surge
-    if previous_contamination_score >= 18.0 and bather_count <= 6:
+    # Animal / pet in pool or post-peak surge triggers immediate 100% high-filtration bio-purge
+    if animal_events > 0 or (previous_contamination_score >= 18.0 and bather_count <= 6):
         return config.vfd_purge_max_pct  # 100.0%
 
     # Zero-occupancy eco-throttle window
@@ -66,6 +69,7 @@ def compute_instantaneous_esg_metrics(
     bather_count: int,
     cotton_violations: int = 0,
     food_drink_events: int = 0,
+    animal_events: int = 0,
     *,
     previous_contamination_score: float = 0.0,
     override_vfd_speed_pct: float | None = None,
@@ -76,6 +80,7 @@ def compute_instantaneous_esg_metrics(
         bather_count=bather_count,
         cotton_violations=cotton_violations,
         food_drink_events=food_drink_events,
+        animal_events=animal_events,
         config=config,
     )
     vfd_pct = (
@@ -88,6 +93,7 @@ def compute_instantaneous_esg_metrics(
             contamination_score=c_score,
             bather_count=bather_count,
             previous_contamination_score=previous_contamination_score,
+            animal_events=animal_events,
             config=config,
         )
     )
@@ -109,6 +115,7 @@ def compute_instantaneous_esg_metrics(
         bather_count=max(0, bather_count),
         cotton_violations=max(0, cotton_violations),
         food_drink_events=max(0, food_drink_events),
+        animal_events=max(0, animal_events),
         contamination_score=c_score,
         recommended_vfd_speed_pct=vfd_pct,
         flow_rate_m3h=flow_m3h,

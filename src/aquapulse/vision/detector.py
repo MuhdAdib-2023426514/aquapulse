@@ -439,6 +439,68 @@ def synthesize_scenario_frame(
             )
         )
 
+    elif scenario == ScenarioName.PET_AND_STRAY_ANIMAL_POOL:
+        # Resident #501 bringing a pet dog into Zone A Shallow water (Strata By-Law Violation)
+        ox_m, oy_m = (8.0, 6.2)
+        opx, opy = pool_meters_to_pixel(ox_m, oy_m)
+        okps, obbox = build_coco_keypoints(
+            opx, opy, posture=PostureState.VERTICAL_TREADING, elapsed_sec=elapsed_sec
+        )
+        pet_owner = SwimmerTrack(
+            track_id=501,
+            role=SwimmerRole.ADULT,
+            zone=PoolZone.ZONE_A_SHALLOW,
+            posture=PostureState.VERTICAL_TREADING,
+            bbox=obbox,
+            pool_coords_m=(ox_m, oy_m),
+            keypoints=okps,
+            suspected_violation=ViolationType.PET_OR_STRAY_ANIMAL,
+        )
+        _draw_synthetic_swimmer_on_frame(frame, pet_owner)
+        tracks.append(pet_owner)
+
+        # Draw pet dog (COCO class 16) swimming next to Resident #501 in Zone A Shallow
+        dog_x, dog_y = opx + 22, opy + 6
+        cv2.ellipse(frame, (dog_x, dog_y), (14, 8), 0, 0, 360, (60, 125, 195), -1)
+        cv2.circle(frame, (dog_x + 12, dog_y - 5), 6, (50, 110, 180), -1)
+        objects.append(
+            DetectedObject(
+                label="dog",
+                confidence=0.95,
+                bbox=(dog_x - 14, dog_y - 11, dog_x + 18, dog_y + 8),
+                zone=PoolZone.ZONE_A_SHALLOW,
+            )
+        )
+
+        # Draw stray cat (COCO class 15) wandering at Zone B pool deck edge
+        cat_x, cat_y = 420, 52
+        cv2.ellipse(frame, (cat_x, cat_y), (10, 5), 0, 0, 360, (90, 140, 210), -1)
+        objects.append(
+            DetectedObject(
+                label="cat",
+                confidence=0.92,
+                bbox=(cat_x - 10, cat_y - 6, cat_x + 12, cat_y + 6),
+                zone=PoolZone.POOL_DECK,
+            )
+        )
+
+        # Second normal lap swimmer in Zone B
+        lpx, lpy = pool_meters_to_pixel(19.0, 4.0)
+        lkps, lbbox = build_coco_keypoints(
+            lpx, lpy, posture=PostureState.ACTIVE_SWIM, elapsed_sec=elapsed_sec
+        )
+        lap_swimmer = SwimmerTrack(
+            track_id=502,
+            role=SwimmerRole.LAP_SWIMMER,
+            zone=PoolZone.ZONE_B_DEEP_END,
+            posture=PostureState.ACTIVE_SWIM,
+            bbox=lbbox,
+            pool_coords_m=(19.0, 4.0),
+            keypoints=lkps,
+        )
+        _draw_synthetic_swimmer_on_frame(frame, lap_swimmer)
+        tracks.append(lap_swimmer)
+
     elif scenario == ScenarioName.MONSOON_DEBRIS_AND_ALGAE:
         # Draw 16 dark olive/brown monsoon storm leaves/twigs across the water basin
         rng = np.random.default_rng(108)

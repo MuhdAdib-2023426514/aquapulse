@@ -44,9 +44,10 @@ TNB_TARIFF_RM_PER_KWH: float = 0.51  # TNB Commercial / Strata Common-Area Tarif
 MY_GRID_KG_CO2_PER_KWH: float = 0.758  # Peninsular Malaysia grid emission factor (kg CO2/kWh)
 
 # Biological & Contamination Load Score weights:
-# Contamination Score = (Swimmer Count * Duration_Hours) + w1*(Cotton Violations) + w2*(Food/Drink Events)
+# Contamination Score = (Swimmer Count * Duration_Hours) + w1*(Cotton Violations) + w2*(Food/Drink Events) + w3*(Animal Events)
 CONTAMINATION_W_COTTON: float = 2.5
 CONTAMINATION_W_FOOD_DRINK: float = 3.0
+CONTAMINATION_W_ANIMAL: float = 5.0
 
 # ---------------------------------------------------------------------------
 # System 1 (Fast Edge Reflex <30ms) & System 2 (Deliberative Agentic Vision)
@@ -98,6 +99,7 @@ class PoolConfig:
     my_grid_kg_co2_per_kwh: float = MY_GRID_KG_CO2_PER_KWH
     contamination_w_cotton: float = CONTAMINATION_W_COTTON
     contamination_w_food_drink: float = CONTAMINATION_W_FOOD_DRINK
+    contamination_w_animal: float = CONTAMINATION_W_ANIMAL
     sys1_verify_sec: float = SYS1_VERIFY_SEC
     sys1_critical_emergency_sec: float = SYS1_CRITICAL_EMERGENCY_SEC
     sys1_supervision_radius_m: float = SYS1_SUPERVISION_RADIUS_M

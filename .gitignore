@@ -17,3 +17,8 @@ assets/*.db
 assets/*.db-shm
 assets/*.db-wal
 assets/models/*.pt
+
+# Repomix outputs
+repomix-output.xml
+repomix*
+

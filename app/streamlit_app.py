@@ -56,14 +56,17 @@ SCENARIO_LABELS: dict[ScenarioName, str] = {
     ScenarioName.COTTON_TSHIRT_AND_FOOD_NUDGE: (
         "3. 👕 System 2 Governance: Cotton T-Shirt & Poolside Food/Drink (15s Nudge -> 30s Ticket)"
     ),
+    ScenarioName.PET_AND_STRAY_ANIMAL_POOL: (
+        "4. 🐕‍🦺 Pet Dog in Pool & Stray Cat on Deck (YOLO26 COCO #15/#16 -> Strata Nudge + 100% VFD Bio-Purge)"
+    ),
     ScenarioName.MONSOON_DEBRIS_AND_ALGAE: (
-        "4. 🍂 Off-Peak Monsoon Storm Leaves & Algae Drift (Auto JMB Cleaner Ticket)"
+        "5. 🍂 Off-Peak Monsoon Storm Leaves & Algae Drift (Auto JMB Cleaner Ticket)"
     ),
     ScenarioName.PEAK_CROWD_SURGE_ECO_DRIVE: (
-        "5. ⚡ Peak Crowd Surge (14 Swimmers -> High VFD Filtration & Post-Peak Purge)"
+        "6. ⚡ Peak Crowd Surge (14 Swimmers -> High VFD Filtration & Post-Peak Purge)"
     ),
     ScenarioName.NORMAL_LAP_AND_FAMILY: (
-        "6. 🏊 Normal Lap & Supervised Family Swim (Baseline Operation)"
+        "7. 🏊 Normal Lap & Supervised Family Swim (Baseline Operation)"
     ),
 }
 
@@ -364,7 +367,7 @@ def render_tab2_esg_simulator() -> None:
     )
 
     # Interactive What-If Bather-Load & Sime Darby Township Scale Sliders
-    s1, s2, s3, s4 = st.columns(4)
+    s1, s2, s3, s4, s5 = st.columns(5)
     sim_bathers = s1.slider(
         "Live Swimmer Headcount", min_value=0, max_value=30, value=0, key="esg_bathers"
     )
@@ -374,7 +377,10 @@ def render_tab2_esg_simulator() -> None:
     sim_food = s3.slider(
         "Poolside Food/Drink Events", min_value=0, max_value=5, value=0, key="esg_food"
     )
-    township_pools = s4.slider(
+    sim_animal = s4.slider(
+        "🐕 Pet / Stray Animal Events", min_value=0, max_value=3, value=0, key="esg_animal"
+    )
+    township_pools = s5.slider(
         "🏙️ Sime Darby Township Scale (Strata Pools)",
         min_value=1,
         max_value=25,
@@ -387,6 +393,7 @@ def render_tab2_esg_simulator() -> None:
         bather_count=sim_bathers,
         cotton_violations=sim_cotton,
         food_drink_events=sim_food,
+        animal_events=sim_animal,
     )
 
     m1, m2, m3, m4, m5 = st.columns(5)

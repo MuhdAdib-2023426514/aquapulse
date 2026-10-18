@@ -54,6 +54,7 @@ class ViolationType(StrEnum):
     COTTON_ATTIRE = "COTTON_ATTIRE"
     FOOD_DRINK_POOLSIDE = "FOOD_DRINK_POOLSIDE"
     SMOKING_VAPING = "SMOKING_VAPING"
+    PET_OR_STRAY_ANIMAL = "PET_OR_STRAY_ANIMAL"
 
 
 class PrivacyMode(StrEnum):
@@ -70,6 +71,7 @@ class ScenarioName(StrEnum):
     SILENT_DROWNING_RESCUE = "SILENT_DROWNING_RESCUE"
     UNACCOMPANIED_TODDLER_DEEP_END = "UNACCOMPANIED_TODDLER_DEEP_END"
     COTTON_TSHIRT_AND_FOOD_NUDGE = "COTTON_TSHIRT_AND_FOOD_NUDGE"
+    PET_AND_STRAY_ANIMAL_POOL = "PET_AND_STRAY_ANIMAL_POOL"
     MONSOON_DEBRIS_AND_ALGAE = "MONSOON_DEBRIS_AND_ALGAE"
     PEAK_CROWD_SURGE_ECO_DRIVE = "PEAK_CROWD_SURGE_ECO_DRIVE"
 
@@ -218,6 +220,7 @@ class ESGPumpMetrics(BaseModel):
     bather_count: int = Field(..., ge=0)
     cotton_violations: int = Field(default=0, ge=0)
     food_drink_events: int = Field(default=0, ge=0)
+    animal_events: int = Field(default=0, ge=0)
     contamination_score: float = Field(..., ge=0.0)
     recommended_vfd_speed_pct: float = Field(..., ge=40.0, le=100.0)
     flow_rate_m3h: float = Field(..., ge=0.0)

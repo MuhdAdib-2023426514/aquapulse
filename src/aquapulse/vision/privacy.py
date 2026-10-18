@@ -170,7 +170,7 @@ def render_tier2_silhouette_frame(
         cv2.LINE_AA,
     )
 
-    # 4. Render detected poolside objects / debris as geometric blueprint markers
+    # 4. Render detected poolside objects / animals / debris as geometric blueprint markers
     if objects:
         for obj in objects:
             ox1, oy1, ox2, oy2 = obj.bbox
@@ -178,6 +178,20 @@ def render_tier2_silhouette_frame(
                 cx, cy = (ox1 + ox2) // 2, (oy1 + oy2) // 2
                 cv2.circle(canvas, (cx, cy), 5, (60, 180, 90), -1)
                 cv2.circle(canvas, (cx, cy), 7, (90, 220, 120), 1)
+            elif obj.label in {"dog", "cat", "bird"}:
+                cx, cy = (ox1 + ox2) // 2, (oy1 + oy2) // 2
+                cv2.rectangle(canvas, (ox1, oy1), (ox2, oy2), (80, 110, 255), 2)
+                cv2.ellipse(canvas, (cx, cy), (8, 4), 0, 0, 360, (80, 110, 255), 2)
+                cv2.putText(
+                    canvas,
+                    f"ANIMAL:{obj.label.upper()}",
+                    (ox1 - 4, max(14, oy1 - 4)),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.35,
+                    (80, 130, 255),
+                    1,
+                    cv2.LINE_AA,
+                )
             else:
                 cv2.rectangle(canvas, (ox1, oy1), (ox2, oy2), (0, 180, 255), 1)
                 cv2.putText(

@@ -191,6 +191,13 @@ class PoolsideToolActuator:
                 "Friendly reminder: Kindly enjoy food and beverages at the designated pergola dining tables "
                 "away from the pool edge to keep our water crystal clear. Thank you!"
             )
+        elif violation_type == ViolationType.PET_OR_STRAY_ANIMAL:
+            tts = (
+                "Friendly reminder from Township Management: Under Strata Management by-laws, pets and animals "
+                "are not permitted in the swimming pool or pool deck area for community hygiene and filter protection. "
+                "Kindly relocate your pet to the designated township pet park. Thank you! "
+                "/ Peringatan mesra: Haiwan peliharaan tidak dibenarkan di kawasan kolam renang mengikut undang-undang kecil strata."
+            )
         else:
             tts = (
                 "Friendly reminder: The pool deck is a smoke-free and vape-free family zone. "
