@@ -114,6 +114,7 @@ class AquaPulseRuntimeService:
         tool_logs = []
         thoughts = []
         roi_crops: dict[int, Any] = {}
+        roi_inspections: dict[int, dict[str, Any]] = {}
 
         for step_dt in dt_steps:
             self.elapsed_sec = round(self.elapsed_sec + step_dt, 2)
@@ -127,15 +128,17 @@ class AquaPulseRuntimeService:
                 cur_frame: Any = raw_frame,
                 cur_objs: Any = objects,
             ) -> Any:
-                res, zoomed = verify_attire_or_item(cur_frame, tr, cur_objs)
+                res, zoomed = verify_attire_or_item(cur_frame, tr, cur_objs, allow_vlm=True)
                 roi_crops[tr.track_id] = zoomed
+                roi_inspections[tr.track_id] = res.model_dump()
                 return res
 
-            sys1_trace, sys2_inspections, step_tools, step_thoughts = self.state_machine.step(
+            sys1_trace, step_sys2, step_tools, step_thoughts = self.state_machine.step(
                 tracks=tracks,
                 dt_sec=step_dt,
                 roi_verifier=_verifier,
             )
+            sys2_inspections.extend(step_sys2)
             tool_logs.extend(step_tools)
             thoughts.extend(step_thoughts)
 
@@ -144,8 +147,11 @@ class AquaPulseRuntimeService:
         # Ensure any track with a suspected violation also has a live Tier-1 face-masked ROI preview
         for tr in tracks:
             if tr.suspected_violation != ViolationType.NONE and tr.track_id not in roi_crops:
-                _, zoomed_preview = verify_attire_or_item(raw_frame, tr, objects)
+                res_preview, zoomed_preview = verify_attire_or_item(
+                    raw_frame, tr, objects, allow_vlm=True
+                )
                 roi_crops[tr.track_id] = zoomed_preview
+                roi_inspections[tr.track_id] = res_preview.model_dump()
 
         silhouette_frame = render_tier2_silhouette_frame(
             tracks=tracks,
@@ -191,6 +197,7 @@ class AquaPulseRuntimeService:
                 "raw_bgr": raw_frame,
                 "water_annotated_bgr": annotated_water_frame,
                 "roi_crops_bgr": roi_crops,
+                "roi_inspections": roi_inspections,
             },
         }
         self.last_snapshot = snapshot

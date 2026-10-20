@@ -76,12 +76,24 @@ def test_system2_agentic_inspector_attire_and_food_verification() -> None:
     assert res_cotton.tier1_face_redacted is True
     assert res_cotton.verified_violation is True
     assert res_cotton.violation_type == ViolationType.COTTON_ATTIRE
+    assert len(res_cotton.visual_tool_steps) >= 3
     assert roi_cotton.ndim == 3
 
     res_food, _ = verify_attire_or_item(frame, food_track, objects)
     assert res_food.tier1_face_redacted is True
     assert res_food.verified_violation is True
     assert res_food.violation_type == ViolationType.FOOD_DRINK_POOLSIDE
+    assert len(res_food.visual_tool_steps) >= 3
+
+    # Verify a compliant swimmer from NORMAL_LAP_AND_FAMILY returns verified_violation=False
+    clean_frame, clean_tracks, clean_objects = synthesize_scenario_frame(
+        ScenarioName.NORMAL_LAP_AND_FAMILY, elapsed_sec=5.0
+    )
+    res_compliant, _ = verify_attire_or_item(clean_frame, clean_tracks[0], clean_objects)
+    assert res_compliant.tier1_face_redacted is True
+    assert res_compliant.verified_violation is False
+    assert res_compliant.violation_type == ViolationType.NONE
+    assert len(res_compliant.visual_tool_steps) >= 3
 
 
 def test_opencv_water_clarity_and_monsoon_debris_inspector() -> None:

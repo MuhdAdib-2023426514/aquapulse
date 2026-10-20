@@ -14,8 +14,11 @@ Malaysian high-rise strata condominiums and township clubhouses face three struc
 
 **AquaPulse** solves all three challenges through a **Dual-Path Agentic Vision & VFD Eco-Drive Architecture** with **Two-Tier Malaysia PDPA 2010 & PDPA (Amendment) Act 2024 Compliance**:
 - **⚡ Path 1 — System 1 Fast Edge Reflex (`<30ms` Synchronous Local Loop)**: Tracks persistent `track_id`s and 17 COCO skeletal keypoints to detect **Active Surface Distress / Flailing (`ACTIVE_FLAILING`)** transitioning continuously into **Silent Submersion (`HORIZONTAL_SUBMERGED`)**, plus **Unaccompanied Toddlers within `1.5m` of the Deep-End Boundary**. Mobilizes poolside bystanders within 5 seconds via a directional siren + bilingual English/Bahasa Malaysia TTS broadcast (`t = 20.0s`) while dispatching the fastest entry route map to the Guardhouse smartphone.
-- **🔍 Path 2 — System 2 Deliberative Agentic Vision (`1–3s` Non-Blocking Governance & Water QA)**: Applies **Tier-1 Face Redaction (`kp[0..4]` blacked out)** before cropping and 2× zooming torso/deck ROIs to verify cotton streetwear (`COTTON_ATTIRE`) and poolside food/drinks (`FOOD_DRINK_POOLSIDE`), playing a polite directional speaker reminder after `15.0s` and only opening a Guardhouse ticket if `2` consecutive nudges (`30.0s`) are ignored.
-- **🌱 Planet Track Bather-Load VFD Pump Eco-Drive**: Throttles Variable Frequency Drive (VFD) filtration pumps down to `40%` eco-mode (`0.352 kW` vs `5.5 kW` fixed via the cubic **Pump Affinity Law** $P_2 / P_1 = (N_2 / N_1)^3$) during verified zero-occupancy windows while strictly enforcing a **Minimum Daily Turnover Floor (`>= 3.5 turnovers/day`)**—achieving **~32–35% energy, RM, and $\text{CO}_2$ savings**.
+- **🔍 Path 2 — System 2 Deliberative Agentic Vision (`1–3s` Non-Blocking 3-Step Visual Tool Chain & Water QA)**: Executes a verifiable **3-Step Agentic Vision Pipeline** (`crop_and_zoom_roi` $\to$ `probe_sub_rois_and_context` $\to$ `verify_attire_or_item`):
+  1. **Step 1 (`crop_and_zoom_roi`)**: Applies **Tier-1 Face Redaction (`kp[0..4]` blacked out)** and crops a `2x` zoomed ROI around the swimmer.
+  2. **Step 2 (`probe_sub_rois_and_context`)**: Extracts the torso polygon (`kp[5,6,11,12]`) to compute HSV saturation/value and Laplacian texture (opaque cotton streetwear vs. dark Lycra swimwear), measures wrist (`kp[9,10]`) proximity to `bottle`/`cup`/`bowl`/`wine glass`/`food_container` or stray/pet animals (`dog`/`cat`/`bird`), and probes wrist/upper-torso aerosol plumes.
+  3. **Step 3 (`verify_attire_or_item`)**: Queries `gemini-2.5-flash` (when `GEMINI_API_KEY` is configured, within a strict `2.0s` timeout) with deterministic offline OpenCV sub-ROI fallback, playing a polite directional speaker reminder after `15.0s` and only opening a Guardhouse ticket if `2` consecutive nudges (`30.0s`) are ignored.
+- **🌱 Planet Track Bather-Load VFD Pump Eco-Drive**: Computes a real-time **Biological & Contamination Load Score** factoring in bather load, cotton streetwear ($w_1$), poolside food/drink ($w_2$), and pet/stray animal bio-hazards ($w_3$). Throttles Variable Frequency Drive (VFD) filtration pumps down to `40%` eco-mode (`0.352 kW` vs `5.5 kW` fixed via the cubic **Pump Affinity Law** $P_2 / P_1 = (N_2 / N_1)^3$) during verified zero-occupancy windows while strictly enforcing a **Minimum Daily Turnover Floor (`>= 3.5 turnovers/day`)**—achieving **~32–35% energy, RM, and $\text{CO}_2$ savings**.
 
 ---
 
@@ -35,6 +38,7 @@ wsl bash -lc 'cd /home/muhammad_adib/swimming_pool_monitoring_system && bash .ag
 ```powershell
 wsl bash -lc 'cd /home/muhammad_adib/swimming_pool_monitoring_system && /home/muhammad_adib/.local/bin/uv run streamlit run app/streamlit_app.py --server.port 8501'
 ```
+*(Optional: export `GEMINI_API_KEY="your-key"` inside WSL to enable live `gemini-2.5-flash` multimodal VLM verification in System 2 Step 3; otherwise it runs 100% offline via deterministic OpenCV sub-ROI heuristics.)*
 
 ### Launch FastAPI Backend Server (Port 8000)
 ```powershell
@@ -48,9 +52,9 @@ wsl bash -lc 'cd /home/muhammad_adib/swimming_pool_monitoring_system && /home/mu
 1. **Minute 0:00–1:00 — Tab 1: System 1 (`<30ms`) Active Flailing $\to$ Silent Drowning Rescue & Two-Tier PDPA Shield**
    - Show the **Tier-2 Skeletal Silhouette Canvas** (`0%` raw biometric pixels stored or displayed).
    - Select **Scenario #1 (`Silent Drowning Rescue`)**: at `0s–9s`, point out Swimmer `#201` in `ACTIVE_FLAILING` (surface panic oscillation). Click **`🟡 10s (VERIFY)`** to show the seamless transition into underwater submersion (`VERIFY` state + yellow poolside strobe). Click **`🚨 20s (CRITICAL)`** to fire the offline WAV siren, bilingual English/BM TTS broadcast, and Guardhouse Smartphone Route Card—all in `<1ms` (`<30ms` budget).
-2. **Minute 1:00–1:45 — Tab 1: System 2 (`>15s`) Tier-1 Face-Masked ROI Zoom & Polite Audio Nudge**
+2. **Minute 1:00–1:45 — Tab 1: System 2 (`>15s`) 3-Step Agentic Vision Tool Chain & Polite Audio Nudge**
    - Select **Scenario #3 (`Cotton T-Shirt & Food Nudge`)** and click **`🔊 15s (Sys2 Nudge #1)`**.
-   - Show the **Tier-1 Face-Masked 2× ROI Zoom** on the right panel: head keypoints `kp[0..4]` are `100%` blacked out (`[0,0,0]`) while the red cotton street t-shirt and poolside beverage containers are verified. Click **`👮 30s (Guard Ticket)`** to demonstrate 2-strike escalation.
+   - Show the **Tier-1 Face-Masked 2× ROI Zoom** and the **`🛠️ Track #ID Agentic Tool Trace (3 Steps)`** checklist on the right panel: Step 1 blacks out head keypoints `kp[0..4] = [0,0,0]` and crops `2x`, Step 2 probes torso polygon (`kp[5,6,11,12]`) HSV/Laplacian fabric texture and wrist (`kp[9,10]`) proximity to food/drinks, and Step 3 issues the VLM/OpenCV consensus verdict. Click **`👮 30s (Guard Ticket)`** to demonstrate 2-strike escalation.
 3. **Minute 1:45–2:30 — Tab 2: Planet Track VFD Pump Eco-Drive & Township Scale Multiplier**
    - Open **Tab 2** to show the cubic **Pump Affinity Law Curve ($P \propto N^3$)** (`0.352 kW` at `40%` speed vs. `5.5 kW` fixed), the **Minimum Daily Turnover Compliance Badge (`>= 3.5 turnovers/day`)**, and slide the **Sime Darby Township Scale Multiplier** to `10–25` strata developments.
 4. **Minute 2:30–3:00 — Tab 3 & Tab 4: Monsoon Debris Inspector & Resident Township App Widget**

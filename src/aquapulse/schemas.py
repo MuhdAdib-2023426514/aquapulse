@@ -177,6 +177,14 @@ class System2InspectionResult(BaseModel):
     inspector_backend: Literal["opencv_heuristic", "gemini_2.5_flash"] = Field(
         default="opencv_heuristic"
     )
+    vlm_used: bool = Field(
+        default=False,
+        description="True when Gemini 2.5 Flash VLM was invoked on the Tier-1 face-masked ROI",
+    )
+    visual_tool_steps: list[str] = Field(
+        default_factory=list,
+        description="Ordered trace of visual tools executed during System 2 inspection",
+    )
     reasoning_summary: str = Field(...)
     inspection_latency_ms: float = Field(default=12.0, ge=0.0)
 

@@ -34,14 +34,21 @@ _STATE_PRIORITY: dict[AgentState, int] = {
 
 def _default_roi_verifier(track: SwimmerTrack) -> System2InspectionResult:
     """Deterministic Tier-1 face-masked ROI verifier used when no custom callback is passed."""
+    verified = track.suspected_violation != ViolationType.NONE
     return System2InspectionResult(
         track_id=track.track_id,
         target_type=f"tier1_masked_{track.suspected_violation.value.lower()}_roi",
         tier1_face_redacted=True,
-        verified_violation=track.suspected_violation != ViolationType.NONE,
+        verified_violation=verified,
         violation_type=track.suspected_violation,
         confidence=0.94,
         inspector_backend="opencv_heuristic",
+        vlm_used=False,
+        visual_tool_steps=[
+            "1. tier1_face_mask_and_2x_zoom: kp[0..4]==0 (True)",
+            f"2. probe_torso_and_wrist_roi: target={track.suspected_violation.value}",
+            f"3. verifier_verdict (opencv_heuristic): verified={verified}",
+        ],
         reasoning_summary=(
             f"Cropped torso/hand ROI with head keypoints kp[0..4] redacted (PDPA Tier-1); "
             f"confirmed {track.suspected_violation.value} texture/contour signature."

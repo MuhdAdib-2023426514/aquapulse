@@ -239,6 +239,11 @@ def _draw_synthetic_swimmer_on_frame(
         # Dark Lycra swimwear
         cv2.rectangle(frame, (cx - 10, cy - 8), (cx + 10, cy + 10), (75, 45, 30), -1)
 
+    if track.suspected_violation == ViolationType.SMOKING_VAPING:
+        # High-value, low-saturation white/gray vape/smoke aerosol plume near hand/wrist
+        cv2.circle(frame, (cx + 14, cy - 4), 7, (238, 238, 242), -1)
+        cv2.circle(frame, (cx + 18, cy - 10), 6, (245, 245, 248), -1)
+
 
 def synthesize_scenario_frame(
     scenario: ScenarioName = ScenarioName.NORMAL_LAP_AND_FAMILY,

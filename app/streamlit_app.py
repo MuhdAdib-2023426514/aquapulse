@@ -6,6 +6,8 @@ Tracks: People (Life Safety, Community Harmony, Inclusivity) & Planet (Energy & 
 
 from __future__ import annotations
 
+from typing import Any
+
 import cv2
 import numpy as np
 import pandas as pd
@@ -266,14 +268,23 @@ def render_tab1_command_center() -> None:
     with right_inspector:
         st.markdown("#### 🔍 System 2 Tier-1 Face-Masked ROI Zoom & Audio Actuators")
         roi_crops: dict[int, np.ndarray] = frames["roi_crops_bgr"]
+        roi_inspections: dict[int, dict[str, Any]] = frames.get("roi_inspections", {})
         if roi_crops:
             roi_cols = st.columns(min(2, len(roi_crops)))
             for idx, (tid, crop_bgr) in enumerate(roi_crops.items()):
-                roi_cols[idx % len(roi_cols)].image(
+                col_target = roi_cols[idx % len(roi_cols)]
+                col_target.image(
                     _bgr_to_rgb(crop_bgr),
                     caption=f"Track #{tid} Tier-1 Face-Masked 2x ROI (kp[0..4] = [0,0,0])",
                     use_container_width=True,
                 )
+                insp_meta = roi_inspections.get(tid)
+                if insp_meta and insp_meta.get("visual_tool_steps"):
+                    with col_target.expander(
+                        f"🛠️ Track #{tid} Agentic Tool Trace (3 Steps)", expanded=True
+                    ):
+                        for step_txt in insp_meta["visual_tool_steps"]:
+                            st.caption(f"✅ `{step_txt}`")
         else:
             st.info(
                 "No System 2 attire/item ROI crop active in this scenario. "
