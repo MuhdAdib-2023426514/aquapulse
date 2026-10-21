@@ -7,8 +7,19 @@ agentic monitoring thresholds.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
+
+# Automatically load environment variables from .env if present
+try:
+    from dotenv import load_dotenv
+
+    _env_file = Path(__file__).resolve().parents[2] / ".env"
+    if _env_file.exists():
+        load_dotenv(_env_file)
+except ImportError:
+    pass
 
 # ---------------------------------------------------------------------------
 # Project & Asset Paths

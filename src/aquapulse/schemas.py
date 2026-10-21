@@ -174,12 +174,12 @@ class System2InspectionResult(BaseModel):
     verified_violation: bool = Field(default=False)
     violation_type: ViolationType = Field(default=ViolationType.NONE)
     confidence: float = Field(default=0.92, ge=0.0, le=1.0)
-    inspector_backend: Literal["opencv_heuristic", "gemini_2.5_flash"] = Field(
+    inspector_backend: Literal["opencv_heuristic", "gemini_3.8_flash"] = Field(
         default="opencv_heuristic"
     )
     vlm_used: bool = Field(
         default=False,
-        description="True when Gemini 2.5 Flash VLM was invoked on the Tier-1 face-masked ROI",
+        description="True when Gemini 3.8 Flash VLM was invoked on the Tier-1 face-masked ROI",
     )
     visual_tool_steps: list[str] = Field(
         default_factory=list,

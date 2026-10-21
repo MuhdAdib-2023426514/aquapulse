@@ -17,7 +17,7 @@ Malaysian high-rise strata condominiums and township clubhouses face three struc
 - **🔍 Path 2 — System 2 Deliberative Agentic Vision (`1–3s` Non-Blocking 3-Step Visual Tool Chain & Water QA)**: Executes a verifiable **3-Step Agentic Vision Pipeline** (`crop_and_zoom_roi` $\to$ `probe_sub_rois_and_context` $\to$ `verify_attire_or_item`):
   1. **Step 1 (`crop_and_zoom_roi`)**: Applies **Tier-1 Face Redaction (`kp[0..4]` blacked out)** and crops a `2x` zoomed ROI around the swimmer.
   2. **Step 2 (`probe_sub_rois_and_context`)**: Extracts the torso polygon (`kp[5,6,11,12]`) to compute HSV saturation/value and Laplacian texture (opaque cotton streetwear vs. dark Lycra swimwear), measures wrist (`kp[9,10]`) proximity to `bottle`/`cup`/`bowl`/`wine glass`/`food_container` or stray/pet animals (`dog`/`cat`/`bird`), and probes wrist/upper-torso aerosol plumes.
-  3. **Step 3 (`verify_attire_or_item`)**: Queries `gemini-2.5-flash` (when `GEMINI_API_KEY` is configured, within a strict `2.0s` timeout) with deterministic offline OpenCV sub-ROI fallback, playing a polite directional speaker reminder after `15.0s` and only opening a Guardhouse ticket if `2` consecutive nudges (`30.0s`) are ignored.
+  3. **Step 3 (`verify_attire_or_item`)**: Queries `gemini-3.8-flash` (when `GEMINI_API_KEY` is configured, within a strict `2.0s` timeout) with deterministic offline OpenCV sub-ROI fallback, playing a polite directional speaker reminder after `15.0s` and only opening a Guardhouse ticket if `2` consecutive nudges (`30.0s`) are ignored.
 - **🌱 Planet Track Bather-Load VFD Pump Eco-Drive**: Computes a real-time **Biological & Contamination Load Score** factoring in bather load, cotton streetwear ($w_1$), poolside food/drink ($w_2$), and pet/stray animal bio-hazards ($w_3$). Throttles Variable Frequency Drive (VFD) filtration pumps down to `40%` eco-mode (`0.352 kW` vs `5.5 kW` fixed via the cubic **Pump Affinity Law** $P_2 / P_1 = (N_2 / N_1)^3$) during verified zero-occupancy windows while strictly enforcing a **Minimum Daily Turnover Floor (`>= 3.5 turnovers/day`)**—achieving **~32–35% energy, RM, and $\text{CO}_2$ savings**.
 
 ---
@@ -38,7 +38,7 @@ wsl bash -lc 'cd /home/muhammad_adib/swimming_pool_monitoring_system && bash .ag
 ```powershell
 wsl bash -lc 'cd /home/muhammad_adib/swimming_pool_monitoring_system && /home/muhammad_adib/.local/bin/uv run streamlit run app/streamlit_app.py --server.port 8501'
 ```
-*(Optional: export `GEMINI_API_KEY="your-key"` inside WSL to enable live `gemini-2.5-flash` multimodal VLM verification in System 2 Step 3; otherwise it runs 100% offline via deterministic OpenCV sub-ROI heuristics.)*
+*(Optional: export `GEMINI_API_KEY="your-key"` inside WSL to enable live `gemini-3.8-flash` multimodal VLM verification in System 2 Step 3; otherwise it runs 100% offline via deterministic OpenCV sub-ROI heuristics.)*
 
 ### Launch FastAPI Backend Server (Port 8000)
 ```powershell

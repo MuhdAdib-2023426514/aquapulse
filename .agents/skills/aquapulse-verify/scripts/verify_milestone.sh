@@ -1,23 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="/home/muhammad_adib/swimming_pool_monitoring_system/.venv/bin:$HOME/.local/bin:$PATH"
 cd /home/muhammad_adib/swimming_pool_monitoring_system
 
+if [ -x ".venv/bin/python" ]; then
+    RUNNER=""
+else
+    RUNNER="uv run"
+fi
+
 echo "=== [1/4] Checking Python & uv environment ==="
-uv run python --version
+$RUNNER python --version
 
 echo "=== [2/4] Running Ruff Linter ==="
-if uv run ruff --version >/dev/null 2>&1; then
-    uv run ruff check .
+if $RUNNER ruff --version >/dev/null 2>&1; then
+    $RUNNER ruff check .
 else
     echo "Ruff not installed yet (skipping until Milestone 1 dependencies are synced)."
 fi
 
 echo "=== [3/4] Running Pytest Suite ==="
-if uv run pytest --version >/dev/null 2>&1; then
+if $RUNNER pytest --version >/dev/null 2>&1; then
     if [ -d "tests" ] && [ -n "$(ls -A tests/*.py 2>/dev/null || true)" ]; then
-        uv run pytest -v
+        $RUNNER pytest -v
     else
         echo "No test files in tests/ yet."
     fi
@@ -27,7 +33,7 @@ fi
 
 echo "=== [4/4] Checking Streamlit App Syntax ==="
 if [ -f "app/streamlit_app.py" ]; then
-    uv run python -m py_compile app/streamlit_app.py
+    $RUNNER python -m py_compile app/streamlit_app.py
     echo "app/streamlit_app.py syntax OK"
 fi
 

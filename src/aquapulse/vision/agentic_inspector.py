@@ -7,7 +7,7 @@ Executes a transparent 3-step visual tool chain:
   across the Torso Polygon (`kp[5,6,11,12]`), Wrist-to-Object Proximity (`kp[9,10]`),
   Animal COCO Context (`dog`/`cat`), and Smoke/Vape Plume ROI—without branching on
   `track.suspected_violation`.
-- Step 3 (`verify_attire_or_item`): Real `gemini-2.5-flash` VLM inspection on the
+- Step 3 (`verify_attire_or_item`): Real `gemini-3.8-flash` VLM inspection on the
   Tier-1 face-masked JPEG bytes (under a strict `2.0s` timeout) with deterministic
   OpenCV heuristic consensus fallback.
 """
@@ -231,7 +231,7 @@ def _call_gemini_vlm_with_timeout(
     heuristic_violation: ViolationType,
     timeout_sec: float,
 ) -> str | None:
-    """Invoke `gemini-2.5-flash` on Tier-1 face-masked JPEG bytes under a strict timeout."""
+    """Invoke `gemini-3.8-flash` on Tier-1 face-masked JPEG bytes under a strict timeout."""
 
     def _invoke() -> str | None:
         from google import genai  # type: ignore[import-not-found]
@@ -244,7 +244,7 @@ def _call_gemini_vlm_with_timeout(
             f"{heuristic_violation.value} or compliant swimwear."
         )
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.8-flash",
             contents=[
                 types.Part.from_bytes(data=jpeg_bytes, mime_type="image/jpeg"),
                 prompt,
@@ -269,7 +269,7 @@ def verify_attire_or_item(
     """Execute 3-Step System 2 `Crop/Zoom (Tier-1 Face-Masked) -> Probe Sub-ROIs -> VLM/Consensus` pipeline.
 
     Always masks facial keypoints `kp[0..4]` BEFORE cropping or calling any verifier.
-    Calls `gemini-2.5-flash` when `GEMINI_API_KEY` is present in the environment, and falls back
+    Calls `gemini-3.8-flash` when `GEMINI_API_KEY` is present in the environment, and falls back
     seamlessly to deterministic OpenCV pixel/geometry heuristics if offline or on timeout.
     """
     t0 = time.perf_counter()
@@ -295,7 +295,7 @@ def verify_attire_or_item(
     summary: str = probe["summary"]
     step2_trace: str = probe["step2_trace"]
 
-    # Step 3: VLM (`gemini-2.5-flash`) Verification with Strict Timeout + Heuristic Consensus
+    # Step 3: VLM (`gemini-3.8-flash`) Verification with Strict Timeout + Heuristic Consensus
     backend: str = "opencv_heuristic"
     vlm_used: bool = False
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -314,8 +314,8 @@ def verify_attire_or_item(
                 )
                 if vlm_text:
                     vlm_used = True
-                    backend = "gemini_2.5_flash"
-                    summary = f"[Gemini 2.5 Flash + OpenCV Consensus] {vlm_text} | {summary}"
+                    backend = "gemini_3.8_flash"
+                    summary = f"[Gemini 3.8 Flash + OpenCV Consensus] {vlm_text} | {summary}"
         except Exception:
             backend = "opencv_heuristic"
             vlm_used = False
