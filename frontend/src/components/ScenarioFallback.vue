@@ -108,7 +108,7 @@ async function onSliderChange(e: Event) {
 
 .subtle {
   font-size: 0.78rem;
-  color: #829AB1;
+  color: #617981;
   margin: 0.2rem 0 0 0;
 }
 
@@ -121,7 +121,7 @@ async function onSliderChange(e: Event) {
 .scen-btn {
   background: rgba(11, 22, 34, 0.7);
   border: 1px solid rgba(51, 78, 104, 0.4);
-  color: #CBD2D9;
+  color: #4B6269;
   font-size: 0.78rem;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
@@ -138,8 +138,8 @@ async function onSliderChange(e: Event) {
 
 .scen-btn.active {
   background: rgba(0, 229, 255, 0.2);
-  color: #00E5FF;
-  border-color: #00E5FF;
+  color: #176776;
+  border-color: #176776;
   box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
   font-weight: 700;
 }
@@ -158,17 +158,17 @@ async function onSliderChange(e: Event) {
   display: flex;
   gap: 0.4rem;
   font-size: 0.8rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .time-readout strong {
-  color: #00E5FF;
+  color: #176776;
   font-family: 'JetBrains Mono', monospace;
 }
 
 .scenario-slider {
   flex: 1;
-  accent-color: #00E5FF;
+  accent-color: #176776;
   cursor: pointer;
 }
 
@@ -186,7 +186,7 @@ async function onSliderChange(e: Event) {
 
 .col-title {
   font-size: 0.72rem;
-  color: #829AB1;
+  color: #617981;
   font-weight: 600;
 }
 
@@ -194,6 +194,6 @@ async function onSliderChange(e: Event) {
   width: 100%;
   border-radius: 6px;
   border: 1px solid rgba(51, 78, 104, 0.5);
-  background: #081018;
+  background: #F5F8F9;
 }
 </style>

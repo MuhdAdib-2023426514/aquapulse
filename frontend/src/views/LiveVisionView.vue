@@ -44,8 +44,8 @@ function onCloseCalibration() {
   <div class="live-vision-view">
     <!-- Top Audio Unlock Banner if needed by browser autoplay policy -->
     <div v-if="!isAudioUnlocked" class="audio-unlock-banner">
-      <span>🔊 Enable directional emergency audio alerts and voice broadcasts for this session:</span>
-      <button class="unlock-btn" @click="unlockAudio">Enable Poolside Audio</button>
+      <span>🔊 Audio is optional for this local demo.</span>
+      <button class="unlock-btn" @click="unlockAudio">Enable demo audio</button>
     </div>
 
     <!-- Agent State & System 1 Latency Banner -->
@@ -59,14 +59,14 @@ function onCloseCalibration() {
           :class="{ active: store.mode === 'video' }"
           @click="store.mode = 'video'"
         >
-          📹 Real Video Ingestion Mode
+          📹 Video review
         </button>
         <button
           class="mode-btn"
           :class="{ active: store.mode === 'scenario' }"
           @click="store.mode = 'scenario'; if (!store.scenarioData) store.stepScenario('NORMAL_LAP_AND_FAMILY', 0)"
         >
-          🧪 Scripted Scenario Engine (Zero-Config)
+          🧪 Scripted example
         </button>
       </div>
 
@@ -86,17 +86,23 @@ function onCloseCalibration() {
       <div class="grid-left">
         <PrivacyViewer />
         <EventTimeline v-if="store.mode === 'video'" />
-        <PoolMap />
-        <TrackTable />
+        <details class="data-details">
+          <summary>Track map and detections</summary>
+          <PoolMap />
+          <TrackTable />
+        </details>
       </div>
 
       <!-- Right Column: Reflex Timers, System 2 ROI Zoom & Guard Smartphone Alert -->
       <div class="grid-right">
-        <ReflexTimers />
-        <System2Inspector />
         <GuardPhoneCard />
-        <ReasoningLog />
         <VideoLibrary @calibrate="onOpenCalibration" />
+        <details class="data-details">
+          <summary>Experimental analysis details</summary>
+          <ReflexTimers />
+          <System2Inspector />
+          <ReasoningLog />
+        </details>
       </div>
     </div>
 
@@ -123,15 +129,15 @@ function onCloseCalibration() {
   align-items: center;
   background: rgba(255, 145, 0, 0.15);
   border: 1px solid rgba(255, 145, 0, 0.4);
-  color: #FFEA00;
+  color: #B1782A;
   padding: 0.65rem 1.25rem;
   border-radius: 8px;
   font-size: 0.85rem;
 }
 
 .unlock-btn {
-  background: #FF9100;
-  color: #081018;
+  background: #A56535;
+  color: #F5F8F9;
   border: none;
   font-weight: 700;
   padding: 0.4rem 0.9rem;
@@ -141,7 +147,7 @@ function onCloseCalibration() {
 }
 
 .unlock-btn:hover {
-  background: #FFEA00;
+  background: #B1782A;
 }
 
 .mode-switch-strip {
@@ -162,7 +168,7 @@ function onCloseCalibration() {
 .mode-btn {
   background: transparent;
   border: 1px solid rgba(51, 78, 104, 0.5);
-  color: #9FB3C8;
+  color: #5F737A;
   padding: 0.45rem 0.9rem;
   border-radius: 6px;
   font-size: 0.82rem;
@@ -172,21 +178,21 @@ function onCloseCalibration() {
 }
 
 .mode-btn:hover {
-  color: #E0F2FE;
+  color: #213D46;
   border-color: rgba(0, 229, 255, 0.4);
 }
 
 .mode-btn.active {
   background: rgba(0, 229, 255, 0.15);
-  color: #00E5FF;
-  border-color: #00E5FF;
+  color: #176776;
+  border-color: #176776;
   box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
 }
 
 .active-source-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .command-grid {

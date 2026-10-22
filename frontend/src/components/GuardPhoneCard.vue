@@ -72,7 +72,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 .phone-frame {
   width: 100%;
   max-width: 320px;
-  background: #081018;
+  background: #F5F8F9;
   border: 6px solid #1E293B;
   border-radius: 28px;
   padding: 0.5rem;
@@ -80,7 +80,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 }
 
 .phone-screen {
-  background: #0F1A24;
+  background: #FFFFFF;
   border-radius: 20px;
   padding: 0.75rem;
   display: flex;
@@ -93,7 +93,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
   justify-content: space-between;
   align-items: center;
   font-size: 0.7rem;
-  color: #829AB1;
+  color: #617981;
   font-family: 'JetBrains Mono', monospace;
   padding-bottom: 0.35rem;
   border-bottom: 1px solid rgba(51, 78, 104, 0.3);
@@ -102,7 +102,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 .phone-cam-notch {
   width: 32px;
   height: 4px;
-  background: #334E68;
+  background: #DCE6E9;
   border-radius: 2px;
 }
 
@@ -128,7 +128,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 
 .alert-icon-circle.critical {
   background: rgba(255, 23, 68, 0.2);
-  border-color: #FF1744;
+  border-color: #A34E42;
   box-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
   animation: pulse-alert 1s infinite alternate;
 }
@@ -147,7 +147,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 
 .alert-zone {
   font-size: 0.75rem;
-  color: #00E5FF;
+  color: #176776;
   font-weight: 600;
 }
 
@@ -162,7 +162,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 
 .route-label {
   font-size: 0.65rem;
-  color: #829AB1;
+  color: #617981;
   text-transform: uppercase;
 }
 
@@ -175,7 +175,7 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 
 .tts-quote {
   font-size: 0.72rem;
-  color: #FFEA00;
+  color: #B1782A;
   font-style: italic;
   line-height: 1.35;
   margin: 0.25rem 0;
@@ -190,8 +190,8 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 
 .phone-ack-btn {
   flex: 1;
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
   border: none;
   font-size: 0.72rem;
   font-weight: 700;
@@ -203,8 +203,8 @@ const latestGuardAlert = computed<ToolExecutionLog | null>(() => {
 .phone-call-btn {
   flex: 1;
   background: rgba(255, 23, 68, 0.15);
-  border: 1px solid #FF1744;
-  color: #FF5252;
+  border: 1px solid #A34E42;
+  color: #A34E42;
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.4rem;

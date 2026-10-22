@@ -41,8 +41,8 @@ function renderCanvas() {
   ctx.clearRect(0, 0, width, height)
 
   if (isSilhouette) {
-    // 1. Dark blueprint architectural background (#0B1622)
-    ctx.fillStyle = '#0B1622'
+    // 1. Dark blueprint architectural background (#F5F8F9)
+    ctx.fillStyle = '#F5F8F9'
     ctx.fillRect(0, 0, width, height)
 
     // 2. Pool basin: Zone A Shallow (#142738) & Zone B Deep End (#0E1D2B)
@@ -81,7 +81,7 @@ function renderCanvas() {
     ctx.lineWidth = 2
     ctx.strokeRect(basinX1, basinY1, basinX2 - basinX1, basinY2 - basinY1)
 
-    ctx.strokeStyle = '#00E5FF'
+    ctx.strokeStyle = '#176776'
     ctx.lineWidth = 2.5
     ctx.setLineDash([6, 4])
     ctx.beginPath()
@@ -124,13 +124,13 @@ function drawSwimmer(
   isSilhouette: boolean
 ) {
   // Determine color based on distress and role
-  let neonColor = '#00E5FF' // default active swimmer
+  let neonColor = '#176776' // default active swimmer
   if (track.is_flailing || track.is_submerged) {
-    neonColor = '#FF1744' // red distress
+    neonColor = '#A34E42' // red distress
   } else if (track.near_deep_boundary) {
-    neonColor = '#FFEA00' // yellow caution
+    neonColor = '#B1782A' // yellow caution
   } else if (track.suspected_violation !== 'NONE') {
-    neonColor = '#FF9100' // orange violation
+    neonColor = '#A56535' // orange violation
   } else if (track.role === 'TODDLER') {
     neonColor = '#E040FB' // purple toddler
   } else if (track.role === 'LAP_SWIMMER') {
@@ -278,26 +278,26 @@ onUnmounted(() => {
 <template>
   <div ref="containerRef" class="privacy-viewer-card">
     <div class="viewer-topline">
-      <div class="privacy-mode-toggle" role="group" aria-label="PDPA Privacy Mode Toggle">
+      <div class="privacy-mode-toggle" role="group" aria-label="Privacy preview mode">
         <button
           :class="{ active: store.privacyMode === 'SILHOUETTE' }"
           @click="store.setPrivacyMode('SILHOUETTE')"
-          title="Tier-2 Neon Skeletal Vectors on Dark Blueprint Grid (0% Raw Camera Pixels)"
+          title="Silhouette rendering depends on detected tracks"
         >
-          🛡️ Tier-2 Silhouette Shield
+          🛡️ Silhouette view
         </button>
         <button
           :class="{ active: store.privacyMode === 'TIER1_FACE_MASKED' }"
           @click="store.setPrivacyMode('TIER1_FACE_MASKED')"
-          title="Tier-1 Face-Masked Video with Neon Skeleton Overlay"
+          title="Face masking depends on successful person detections"
         >
-          👤 Tier-1 Face-Masked Video
+          👤 Face-mask preview
         </button>
       </div>
 
       <div class="compliance-badge">
         <span class="compliance-dot"></span>
-        <span>PDPA 2010 &amp; 2024 Compliant</span>
+        <span>Masking depends on detections</span>
       </div>
     </div>
 
@@ -420,7 +420,7 @@ onUnmounted(() => {
 .privacy-mode-toggle button {
   background: transparent;
   border: none;
-  color: #9FB3C8;
+  color: #5F737A;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.35rem 0.65rem;
@@ -431,7 +431,7 @@ onUnmounted(() => {
 
 .privacy-mode-toggle button.active {
   background: rgba(0, 229, 255, 0.18);
-  color: #00E5FF;
+  color: #176776;
   box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
 }
 
@@ -441,7 +441,7 @@ onUnmounted(() => {
   gap: 0.4rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
-  color: #00FF66;
+  color: #397A68;
   background: rgba(0, 255, 102, 0.1);
   padding: 0.25rem 0.6rem;
   border-radius: 4px;
@@ -451,15 +451,15 @@ onUnmounted(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #00FF66;
-  box-shadow: 0 0 6px #00FF66;
+  background: #397A68;
+  box-shadow: 0 0 6px #397A68;
 }
 
 .stage-container {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #081018;
+  background: #F5F8F9;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(51, 78, 104, 0.5);
@@ -522,7 +522,7 @@ onUnmounted(() => {
 
 .placeholder-content p {
   font-size: 0.85rem;
-  color: #9FB3C8;
+  color: #5F737A;
   line-height: 1.45;
 }
 
@@ -533,8 +533,8 @@ onUnmounted(() => {
 }
 
 .primary-action-btn {
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
   border: none;
   font-size: 0.85rem;
   font-weight: 700;
@@ -568,7 +568,7 @@ onUnmounted(() => {
 
 .prog-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #00E5FF, #00FF66);
+  background: linear-gradient(90deg, #176776, #397A68);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -576,7 +576,7 @@ onUnmounted(() => {
 .prog-pct {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
-  color: #00E5FF;
+  color: #176776;
   font-weight: 700;
 }
 
@@ -592,8 +592,8 @@ onUnmounted(() => {
 }
 
 .play-btn {
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
   border: none;
   font-size: 0.82rem;
   font-weight: 700;
@@ -621,12 +621,12 @@ onUnmounted(() => {
 }
 
 .time-sep {
-  color: #627D98;
+  color: #72858B;
 }
 
 .scrubber {
   flex: 1;
-  accent-color: #00E5FF;
+  accent-color: #176776;
   cursor: pointer;
 }
 
@@ -641,7 +641,7 @@ onUnmounted(() => {
 .speed-selector button {
   background: transparent;
   border: none;
-  color: #829AB1;
+  color: #617981;
   font-size: 0.7rem;
   font-weight: 600;
   padding: 0.25rem 0.4rem;
@@ -651,13 +651,13 @@ onUnmounted(() => {
 
 .speed-selector button.active {
   background: rgba(0, 229, 255, 0.2);
-  color: #00E5FF;
+  color: #176776;
 }
 
 .mute-btn {
   background: transparent;
   border: 1px solid rgba(51, 78, 104, 0.5);
-  color: #9FB3C8;
+  color: #5F737A;
   font-size: 0.72rem;
   padding: 0.35rem 0.6rem;
   border-radius: 4px;
@@ -666,6 +666,6 @@ onUnmounted(() => {
 
 .mute-btn:hover {
   color: #FFFFFF;
-  border-color: #00E5FF;
+  border-color: #176776;
 }
 </style>

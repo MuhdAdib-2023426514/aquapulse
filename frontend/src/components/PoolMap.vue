@@ -26,12 +26,12 @@ function toSvgY(y_m: number): number {
 }
 
 function trackColor(tr: SwimmerTrack): string {
-  if (tr.is_flailing || tr.is_submerged) return '#FF1744'
-  if (tr.near_deep_boundary) return '#FFEA00'
-  if (tr.suspected_violation !== 'NONE') return '#FF9100'
+  if (tr.is_flailing || tr.is_submerged) return '#A34E42'
+  if (tr.near_deep_boundary) return '#B1782A'
+  if (tr.suspected_violation !== 'NONE') return '#A56535'
   if (tr.role === 'TODDLER') return '#E040FB'
   if (tr.role === 'LAP_SWIMMER') return '#00E676'
-  return '#00E5FF'
+  return '#176776'
 }
 
 // Pairwise distances for toddlers to nearest adults
@@ -79,7 +79,7 @@ const supervisionPairs = computed(() => {
       <line x1="0" :y1="svgH * 0.75" :x2="svgW" :y2="svgH * 0.75" stroke="#1E3E59" stroke-dasharray="4,4" />
 
       <!-- 12.5m Deep-End Transition Boundary -->
-      <line :x1="svgW / 2" y1="0" :x2="svgW / 2" :y2="svgH" stroke="#00E5FF" stroke-width="2.5" stroke-dasharray="6,4" />
+      <line :x1="svgW / 2" y1="0" :x2="svgW / 2" :y2="svgH" stroke="#176776" stroke-width="2.5" stroke-dasharray="6,4" />
 
       <!-- Zone labels -->
       <text x="14" y="24" fill="#94A3B8" font-size="11" font-weight="600" font-family="Outfit, sans-serif">
@@ -90,8 +90,8 @@ const supervisionPairs = computed(() => {
       </text>
 
       <!-- 1.5m Supervision Boundary line near Deep End -->
-      <line :x1="svgW / 2 - 1.5 * scale" y1="0" :x2="svgW / 2 - 1.5 * scale" :y2="svgH" stroke="#FFEA00" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6" />
-      <text :x="svgW / 2 - 1.5 * scale - 6" y="svgH - 10" text-anchor="end" fill="#FFEA00" font-size="9" opacity="0.8">1.5m Boundary</text>
+      <line :x1="svgW / 2 - 1.5 * scale" y1="0" :x2="svgW / 2 - 1.5 * scale" :y2="svgH" stroke="#B1782A" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6" />
+      <text :x="svgW / 2 - 1.5 * scale - 6" y="svgH - 10" text-anchor="end" fill="#B1782A" font-size="9" opacity="0.8">1.5m Boundary</text>
 
       <!-- Adult-Toddler supervision lines -->
       <g v-for="(pair, idx) in supervisionPairs" :key="`pair-${idx}`">
@@ -100,7 +100,7 @@ const supervisionPairs = computed(() => {
           :y1="toSvgY(pair.toddler.pool_coords_m[1])"
           :x2="toSvgX(pair.adult.pool_coords_m[0])"
           :y2="toSvgY(pair.adult.pool_coords_m[1])"
-          :stroke="pair.distM <= 1.5 ? '#00E676' : '#FF1744'"
+          :stroke="pair.distM <= 1.5 ? '#00E676' : '#A34E42'"
           stroke-width="1.5"
           stroke-dasharray="3,2"
         />
@@ -136,7 +136,7 @@ const supervisionPairs = computed(() => {
           :cy="toSvgY(track.pool_coords_m[1])"
           :r="track.role === 'TODDLER' ? 7 : 9"
           :fill="trackColor(track)"
-          stroke="#0B1622"
+          stroke="#F5F8F9"
           stroke-width="2"
         />
 
@@ -145,7 +145,7 @@ const supervisionPairs = computed(() => {
           :x="toSvgX(track.pool_coords_m[0])"
           :y="toSvgY(track.pool_coords_m[1]) + 3"
           text-anchor="middle"
-          fill="#0B1622"
+          fill="#F5F8F9"
           font-size="9"
           font-weight="700"
         >
@@ -195,7 +195,7 @@ const supervisionPairs = computed(() => {
   display: flex;
   gap: 0.75rem;
   font-size: 0.7rem;
-  color: #9FB3C8;
+  color: #5F737A;
 }
 
 .legend-item {
@@ -210,15 +210,15 @@ const supervisionPairs = computed(() => {
   border-radius: 50%;
 }
 
-.legend-dot.shallow { background: #00E5FF; }
+.legend-dot.shallow { background: #176776; }
 .legend-dot.toddler { background: #E040FB; }
-.legend-dot.distress { background: #FF1744; }
+.legend-dot.distress { background: #A34E42; }
 
 .pool-map-svg {
   width: 100%;
   height: auto;
   border-radius: 6px;
   border: 1px solid rgba(51, 78, 104, 0.5);
-  background: #081018;
+  background: #F5F8F9;
 }
 </style>

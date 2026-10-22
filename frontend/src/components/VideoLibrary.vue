@@ -173,7 +173,7 @@ async function onFileSelected(e: Event) {
 .upload-btn {
   background: rgba(0, 229, 255, 0.15);
   border: 1px solid rgba(0, 229, 255, 0.4);
-  color: #00E5FF;
+  color: #176776;
   font-size: 0.78rem;
   font-weight: 700;
   padding: 0.35rem 0.75rem;
@@ -183,8 +183,8 @@ async function onFileSelected(e: Event) {
 }
 
 .upload-btn:hover:not(:disabled) {
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
 }
 
 .upload-btn:disabled {
@@ -215,7 +215,7 @@ async function onFileSelected(e: Event) {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #00E5FF;
+  color: #176776;
   font-family: 'JetBrains Mono', monospace;
 }
 
@@ -229,7 +229,7 @@ async function onFileSelected(e: Event) {
 
 .prog-bar-fill {
   height: 100%;
-  background: #00E5FF;
+  background: #176776;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -262,7 +262,7 @@ async function onFileSelected(e: Event) {
 
 .video-row.active {
   background: rgba(0, 229, 255, 0.12);
-  border-color: #00E5FF;
+  border-color: #176776;
   box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
 }
 
@@ -287,7 +287,7 @@ async function onFileSelected(e: Event) {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.7rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .status-chip {
@@ -301,22 +301,22 @@ async function onFileSelected(e: Event) {
 
 .status-chip.completed {
   background: rgba(0, 255, 102, 0.15);
-  color: #00FF66;
+  color: #397A68;
 }
 
 .status-chip.processing {
   background: rgba(0, 229, 255, 0.15);
-  color: #00E5FF;
+  color: #176776;
 }
 
 .status-chip.uploaded {
   background: rgba(255, 234, 0, 0.15);
-  color: #FFEA00;
+  color: #B1782A;
 }
 
 .status-chip.failed {
   background: rgba(255, 23, 68, 0.15);
-  color: #FF1744;
+  color: #A34E42;
 }
 
 .vid-actions {
@@ -328,7 +328,7 @@ async function onFileSelected(e: Event) {
 .action-btn {
   background: transparent;
   border: 1px solid rgba(51, 78, 104, 0.5);
-  color: #CBD2D9;
+  color: #4B6269;
   font-size: 0.7rem;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -338,13 +338,13 @@ async function onFileSelected(e: Event) {
 
 .action-btn:hover {
   color: #FFFFFF;
-  border-color: #00E5FF;
+  border-color: #176776;
 }
 
 .run-btn {
-  background: #00E5FF;
-  color: #081018;
-  border-color: #00E5FF;
+  background: #176776;
+  color: #F5F8F9;
+  border-color: #176776;
   font-weight: 700;
 }
 
@@ -355,19 +355,19 @@ async function onFileSelected(e: Event) {
 .play-badge {
   background: rgba(0, 255, 102, 0.15);
   border-color: rgba(0, 255, 102, 0.4);
-  color: #00FF66;
+  color: #397A68;
   font-weight: 600;
 }
 
 .del-btn:hover {
-  color: #FF1744;
-  border-color: #FF1744;
+  color: #A34E42;
+  border-color: #A34E42;
 }
 
 .empty-list {
   text-align: center;
   padding: 1.5rem 0.5rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .empty-list p {
@@ -377,6 +377,6 @@ async function onFileSelected(e: Event) {
 
 .empty-list small {
   font-size: 0.72rem;
-  color: #627D98;
+  color: #72858B;
 }
 </style>

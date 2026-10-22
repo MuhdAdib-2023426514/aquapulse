@@ -64,9 +64,9 @@ const affinityChartOption = computed(() => {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#0F1A24',
-      borderColor: '#00E5FF',
-      textStyle: { color: '#E0F2FE', fontFamily: 'JetBrains Mono' },
+      backgroundColor: '#FFFFFF',
+      borderColor: '#176776',
+      textStyle: { color: '#213D46', fontFamily: 'JetBrains Mono' },
       formatter: (params: any) => {
         const p = params[0]
         return `<b>VFD Speed: ${p.axisValue}%</b><br/>Pump Power: <b>${p.data} kW</b><br/>vs Fixed: <b>5.50 kW</b>`
@@ -79,14 +79,14 @@ const affinityChartOption = computed(() => {
       name: 'Pump Speed (%)',
       nameLocation: 'middle',
       nameGap: 24,
-      axisLine: { lineStyle: { color: '#334E68' } },
-      axisLabel: { color: '#9FB3C8', formatter: '{value}%' },
+      axisLine: { lineStyle: { color: '#DCE6E9' } },
+      axisLabel: { color: '#5F737A', formatter: '{value}%' },
     },
     yAxis: {
       type: 'value',
       name: 'Power (kW)',
-      axisLine: { lineStyle: { color: '#334E68' } },
-      axisLabel: { color: '#9FB3C8', formatter: '{value} kW' },
+      axisLine: { lineStyle: { color: '#DCE6E9' } },
+      axisLabel: { color: '#5F737A', formatter: '{value} kW' },
       splitLine: { lineStyle: { color: 'rgba(51, 78, 104, 0.3)' } },
     },
     series: [
@@ -95,7 +95,7 @@ const affinityChartOption = computed(() => {
         type: 'line',
         smooth: true,
         data: powers,
-        lineStyle: { color: '#00E5FF', width: 3 },
+        lineStyle: { color: '#176776', width: 3 },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: 'rgba(0, 229, 255, 0.35)' },
@@ -108,9 +108,9 @@ const affinityChartOption = computed(() => {
               coord: [String(Math.round(curSpeed / 10) * 10), curKw],
               symbol: 'pin',
               symbolSize: 45,
-              itemStyle: { color: '#FF1744' },
+              itemStyle: { color: '#A34E42' },
               label: {
-                formatter: `LIVE\n${curSpeed}%\n${curKw}kW`,
+                formatter: `ESTIMATE\n${curSpeed}%\n${curKw}kW`,
                 fontSize: 9,
                 color: '#fff',
                 fontFamily: 'JetBrains Mono',
@@ -120,8 +120,8 @@ const affinityChartOption = computed(() => {
         },
         markLine: {
           silent: true,
-          lineStyle: { color: '#FF9100', type: 'dashed' },
-          data: [{ yAxis: 5.5, label: { formatter: 'Fixed Baseline (5.5 kW)', color: '#FF9100' } }],
+          lineStyle: { color: '#A56535', type: 'dashed' },
+          data: [{ yAxis: 5.5, label: { formatter: 'Fixed Baseline (5.5 kW)', color: '#A56535' } }],
         },
       },
     ],
@@ -141,29 +141,29 @@ const schedule24hOption = computed(() => {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#0F1A24',
-      borderColor: '#00E5FF',
-      textStyle: { color: '#E0F2FE', fontFamily: 'JetBrains Mono' },
+      backgroundColor: '#FFFFFF',
+      borderColor: '#176776',
+      textStyle: { color: '#213D46', fontFamily: 'JetBrains Mono' },
     },
     legend: {
       data: ['Bather Headcount', 'VFD Speed %'],
-      textStyle: { color: '#9FB3C8' },
+      textStyle: { color: '#5F737A' },
       top: '2%',
     },
     grid: { left: '8%', right: '8%', top: '18%', bottom: '15%' },
     xAxis: {
       type: 'category',
       data: hours,
-      axisLine: { lineStyle: { color: '#334E68' } },
-      axisLabel: { color: '#9FB3C8', interval: 2 },
+      axisLine: { lineStyle: { color: '#DCE6E9' } },
+      axisLabel: { color: '#5F737A', interval: 2 },
     },
     yAxis: [
       {
         type: 'value',
         name: 'Bathers',
         min: 0,
-        axisLine: { lineStyle: { color: '#334E68' } },
-        axisLabel: { color: '#9FB3C8' },
+        axisLine: { lineStyle: { color: '#DCE6E9' } },
+        axisLabel: { color: '#5F737A' },
         splitLine: { lineStyle: { color: 'rgba(51, 78, 104, 0.2)' } },
       },
       {
@@ -171,8 +171,8 @@ const schedule24hOption = computed(() => {
         name: 'VFD %',
         min: 0,
         max: 100,
-        axisLine: { lineStyle: { color: '#334E68' } },
-        axisLabel: { color: '#00E5FF', formatter: '{value}%' },
+        axisLine: { lineStyle: { color: '#DCE6E9' } },
+        axisLabel: { color: '#176776', formatter: '{value}%' },
         splitLine: { show: false },
       },
     ],
@@ -189,7 +189,7 @@ const schedule24hOption = computed(() => {
         yAxisIndex: 1,
         smooth: true,
         data: speeds,
-        lineStyle: { color: '#00FF66', width: 2.5 },
+        lineStyle: { color: '#397A68', width: 2.5 },
       },
     ],
   }
@@ -201,13 +201,9 @@ const schedule24hOption = computed(() => {
     <!-- Header Banner -->
     <div class="esg-hero-card">
       <div class="hero-left">
-        <div class="hero-badge">TRACK 2: PLANET — ENERGY & WATER CONSERVATION</div>
-        <h2>Dynamic "Bather-Load" VFD Pump & Chemical Eco-Drive</h2>
-        <p class="hero-desc">
-          Continuous modulation of Malaysian high-rise pool filtration pumps based on vision-derived occupancy,
-          cotton-streetwear violations, and animal incidents via the <b>Pump Affinity Law</b> ($P \propto N^3$)
-          while guaranteeing statutory sanitation via the <b>Turnover Floor ($\ge 3.5$ turns/day)</b>.
-        </p>
+        <div class="hero-badge">SAMPLE CALCULATIONS</div>
+        <h2>Pump energy estimate</h2>
+        <p class="hero-desc">Illustrative calculations from assumed pump values. No live equipment readings or pump control.</p>
       </div>
       <div class="hero-right">
         <div class="turnover-pill" :class="{ compliant: isTurnoverCompliant }">
@@ -215,19 +211,20 @@ const schedule24hOption = computed(() => {
           <div class="pill-text">
             <span class="label">Daily Turnover Floor</span>
             <span class="val">{{ turnovers.toFixed(2) }} / 3.50 Floor</span>
-            <span class="sub">{{ isTurnoverCompliant ? '100% SANITATION COMPLIANT' : 'SUB-FLOOR ALERT' }}</span>
+            <span class="sub">{{ isTurnoverCompliant ? 'ESTIMATE ABOVE FLOOR' : 'SUB-FLOOR ALERT' }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Live Real-Time Telemetry Row (Synced to Video Playhead) -->
+    <p class="data-note">Values are estimates from a clip, scripted example, or seeded sample data. They are not measured savings.</p>
+
     <div class="metrics-grid">
       <!-- 1. Bather Load & Contamination -->
       <div class="metric-card">
         <div class="card-title">
           <span>BIOLOGICAL CONTAMINATION</span>
-          <span class="tag live-tag">LIVE SYNC</span>
+          <span class="tag live-tag">CLIP / SAMPLE</span>
         </div>
         <div class="card-hero-val" :class="{ alert: contaminationScore > 10 }">
           {{ contaminationScore.toFixed(1) }}
@@ -285,13 +282,15 @@ const schedule24hOption = computed(() => {
       </div>
     </div>
 
+    <details class="data-details">
+      <summary>View trend charts and seeded sample history</summary>
     <!-- Charts Row: Affinity Law Curve + 24-Hour Diurnal Profile -->
     <div class="charts-row">
       <div class="chart-card">
         <div class="chart-header">
           <div>
             <h3>Pump Affinity Law: Cubic Power Curve</h3>
-            <p class="chart-subtitle">P₂ = P₁ &times; (N₂ / N₁)&sup3; &bull; Live operating point updates as video plays</p>
+            <p class="chart-subtitle">P₂ = P₁ &times; (N₂ / N₁)&sup3; &bull; Example point follows the selected source</p>
           </div>
           <span class="formula-chip">P &prop; N&sup3;</span>
         </div>
@@ -299,7 +298,7 @@ const schedule24hOption = computed(() => {
           <VChart :option="affinityChartOption" autoresize />
         </div>
         <div class="chart-footer-note">
-          💡 <b>Cubic Advantage</b>: At 40% zero-occupancy eco-throttle, power drops from 5.50 kW down to 0.352 kW (<b>93.6% reduction</b>) while sustaining surface skimming.
+          💡 <b>Cubic Advantage</b>: Illustrative cubic estimate: 40% speed projects 0.352 kW against 5.50 kW fixed input (<b>93.6% reduction</b>) under idealized assumptions.
         </div>
       </div>
 
@@ -315,7 +314,7 @@ const schedule24hOption = computed(() => {
           <VChart :option="schedule24hOption" autoresize />
         </div>
         <div class="chart-footer-note">
-          🌊 Maintains <b>3.73 turnovers/day</b> floor through automated daytime surge filtering and overnight 40% eco-skimming.
+          🌊 Sample schedule projects <b>3.73 turns/day</b> under assumed conditions.
         </div>
       </div>
     </div>
@@ -324,8 +323,8 @@ const schedule24hOption = computed(() => {
     <div class="history-card" v-if="esgSummary?.summary_30d">
       <div class="history-header">
         <div>
-          <h3>30-Day Malaysian Strata Condo Pool Telemetry</h3>
-          <p class="chart-subtitle">Historical records pre-seeded from Malaysian high-rise pool facility data (450 m³ pool)</p>
+          <h3>Seeded 30-day sample summary</h3>
+          <p class="chart-subtitle">Illustrative seeded records for a sample 450 m³ pool</p>
         </div>
         <span class="days-badge">{{ esgSummary.summary_30d.days_recorded || 30 }} Days Tracked</span>
       </div>
@@ -358,6 +357,7 @@ const schedule24hOption = computed(() => {
         </div>
       </div>
     </div>
+    </details>
   </div>
 </template>
 
@@ -386,7 +386,7 @@ const schedule24hOption = computed(() => {
 .hero-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: #00E5FF;
+  color: #176776;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
 }
@@ -400,7 +400,7 @@ const schedule24hOption = computed(() => {
 
 .hero-desc {
   font-size: 0.9rem;
-  color: #9FB3C8;
+  color: #5F737A;
   line-height: 1.45;
   margin: 0;
 }
@@ -424,12 +424,12 @@ const schedule24hOption = computed(() => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #FF1744;
+  background: #A34E42;
 }
 
 .turnover-pill.compliant .pulse-dot {
-  background: #00FF66;
-  box-shadow: 0 0 8px #00FF66;
+  background: #397A68;
+  box-shadow: 0 0 8px #397A68;
   animation: pulse 2s infinite;
 }
 
@@ -446,7 +446,7 @@ const schedule24hOption = computed(() => {
 
 .pill-text .label {
   font-size: 0.7rem;
-  color: #9FB3C8;
+  color: #5F737A;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -460,7 +460,7 @@ const schedule24hOption = computed(() => {
 
 .pill-text .sub {
   font-size: 0.65rem;
-  color: #00FF66;
+  color: #397A68;
   font-weight: 600;
 }
 
@@ -487,7 +487,7 @@ const schedule24hOption = computed(() => {
   justify-content: space-between;
   align-items: center;
   font-size: 0.75rem;
-  color: #9FB3C8;
+  color: #5F737A;
   font-weight: 600;
   letter-spacing: 0.05em;
 }
@@ -502,17 +502,17 @@ const schedule24hOption = computed(() => {
 
 .live-tag {
   background: rgba(0, 229, 255, 0.15);
-  color: #00E5FF;
+  color: #176776;
 }
 
 .speed-tag {
   background: rgba(0, 255, 102, 0.15);
-  color: #00FF66;
+  color: #397A68;
 }
 
 .tnb-tag {
   background: rgba(255, 145, 0, 0.15);
-  color: #FF9100;
+  color: #A56535;
 }
 
 .card-hero-val {
@@ -524,33 +524,33 @@ const schedule24hOption = computed(() => {
 
 .card-hero-val .unit {
   font-size: 0.95rem;
-  color: #9FB3C8;
+  color: #5F737A;
   font-weight: 500;
 }
 
 .accent-cyan {
-  color: #00E5FF;
+  color: #176776;
 }
 
 .accent-green {
-  color: #00FF66;
+  color: #397A68;
 }
 
 .card-hero-val.alert {
-  color: #FF9100;
+  color: #A56535;
 }
 
 .card-sub-info {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: #9FB3C8;
+  color: #5F737A;
 }
 
 .pill-mini {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
-  color: #627D98;
+  color: #72858B;
 }
 
 .progress-bar-wrap {
@@ -563,27 +563,27 @@ const schedule24hOption = computed(() => {
 
 .progress-bar {
   height: 100%;
-  background: #00E5FF;
+  background: #176776;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
 
 .progress-bar.cyan {
-  background: #00E5FF;
+  background: #176776;
 }
 
 .progress-bar.warning {
-  background: #FF9100;
+  background: #A56535;
 }
 
 .progress-bar.danger {
-  background: #FF1744;
+  background: #A34E42;
 }
 
 .savings-pct-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: #00FF66;
+  color: #397A68;
   background: rgba(0, 255, 102, 0.1);
   padding: 0.3rem 0.5rem;
   border-radius: 4px;
@@ -622,7 +622,7 @@ const schedule24hOption = computed(() => {
 
 .chart-subtitle {
   font-size: 0.75rem;
-  color: #829AB1;
+  color: #617981;
   margin: 0.2rem 0 0 0;
 }
 
@@ -632,7 +632,7 @@ const schedule24hOption = computed(() => {
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   background: rgba(0, 229, 255, 0.15);
-  color: #00E5FF;
+  color: #176776;
 }
 
 .chart-container {
@@ -642,9 +642,9 @@ const schedule24hOption = computed(() => {
 
 .chart-footer-note {
   font-size: 0.78rem;
-  color: #9FB3C8;
+  color: #5F737A;
   background: rgba(11, 22, 34, 0.6);
-  border-left: 3px solid #00E5FF;
+  border-left: 3px solid #176776;
   padding: 0.5rem 0.75rem;
   border-radius: 0 6px 6px 0;
   margin-top: 0.5rem;
@@ -675,7 +675,7 @@ const schedule24hOption = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   background: rgba(0, 229, 255, 0.15);
-  color: #00E5FF;
+  color: #176776;
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
 }
@@ -703,7 +703,7 @@ const schedule24hOption = computed(() => {
 
 .stat-box .label {
   font-size: 0.7rem;
-  color: #829AB1;
+  color: #617981;
   text-transform: uppercase;
 }
 
@@ -715,11 +715,11 @@ const schedule24hOption = computed(() => {
 }
 
 .stat-box.highlight-rm .val {
-  color: #00FF66;
+  color: #397A68;
 }
 
 .stat-box .sub {
   font-size: 0.68rem;
-  color: #627D98;
+  color: #72858B;
 }
 </style>

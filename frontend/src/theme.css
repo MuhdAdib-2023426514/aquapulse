@@ -1,0 +1,399 @@
+/* Compact, light PoolGuard-style visual system. */
+.aquapulse-root {
+  min-height: 100vh;
+  background: var(--page) !important;
+  color: var(--text) !important;
+  font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+.master-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  min-height: 72px;
+  gap: 28px;
+  padding: 0 4.5%;
+  background: #fff !important;
+  border-bottom: 1px solid var(--line) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.header-left { flex-shrink: 0; }
+.brand-logo { gap: 10px !important; }
+.logo-pulse-circle {
+  width: 30px !important;
+  height: 30px !important;
+  background: var(--accent) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+.logo-text {
+  background: none !important;
+  color: var(--text) !important;
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  letter-spacing: -.6px !important;
+  -webkit-text-fill-color: var(--text) !important;
+}
+.prototype-label {
+  border-left: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  margin-left: 8px;
+  padding-left: 12px;
+}
+
+.header-nav {
+  flex: 1;
+  justify-content: center;
+  gap: 20px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+.nav-tab-btn {
+  position: relative;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 4px !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+}
+.nav-tab-btn:hover { color: var(--accent) !important; }
+.nav-tab-btn.active {
+  background: transparent !important;
+  color: var(--accent) !important;
+  box-shadow: none !important;
+}
+.nav-tab-btn.active::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 3px;
+  background: var(--accent);
+  content: "";
+}
+.tab-label { color: inherit !important; font-size: 13px !important; font-weight: 600; }
+.tab-track, .tab-icon { display: none !important; }
+
+.header-right { gap: 10px !important; }
+.model-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border: 1px solid #e7d9c8;
+  border-radius: 4px;
+  padding: 5px 9px;
+  background: #faf4eb;
+  color: #805a2e;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.audio-toggle-btn {
+  border: 1px solid var(--line) !important;
+  border-radius: 5px !important;
+  padding: 7px 10px !important;
+  background: #fff !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+.audio-toggle-btn:hover { background: var(--accent-soft) !important; }
+
+.master-main {
+  width: min(1440px, 100%);
+  padding: 30px 4.5% 42px !important;
+}
+.command-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(290px, .85fr) !important;
+  gap: 18px !important;
+}
+.master-footer {
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 4.5% !important;
+  background: #fff !important;
+  border-top: 1px solid var(--line) !important;
+  color: var(--muted) !important;
+  font-size: 11px;
+}
+.global-error-banner {
+  border-color: #e7c5bb !important;
+  background: #fbefeb !important;
+  color: var(--danger) !important;
+}
+
+.agent-banner,
+.esg-hero-card,
+.water-hero-card,
+.resident-hero-card,
+.metric-card,
+.chart-card,
+.history-card,
+.gauge-card,
+.panel-box,
+.forecast-panel,
+.smartphone-frame,
+.phone-screen,
+.diagnostic-grid > *,
+.resident-grid > *,
+.scenario-fallback,
+.privacy-viewer,
+.video-library,
+.timeline-card,
+.pool-map-card,
+.track-table-card,
+.reasoning-card,
+.system2-card,
+.reflex-card {
+  background: #fff !important;
+  border-color: var(--line) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+  backdrop-filter: none !important;
+}
+.aquapulse-root [class$="-card"],
+.aquapulse-root [class$="-panel"] {
+  background: #fff !important;
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+  backdrop-filter: none !important;
+}
+
+.esg-view, .water-view, .resident-view, .live-vision-view { color: var(--text) !important; }
+.aquapulse-root h1, .aquapulse-root h2, .aquapulse-root h3, .aquapulse-root h4 {
+  color: var(--text) !important;
+}
+.stage-placeholder h2, .stage-placeholder h3 { color: #fff !important; }
+.hero-badge, .gauge-label, .card-title, .panel-header, .chart-header h3,
+.history-header h3, .forecast-header h3, .section-title, .card-subtitle {
+  color: var(--text) !important;
+}
+.hero-desc, .chart-subtitle, .chart-footer-note, .card-sub-info, .gauge-sub-info,
+.forecast-subtitle, .action-note, .state-desc, .kpi-sub, .muted, .subtle {
+  color: var(--muted) !important;
+}
+.compliance-badge {
+  border: 1px solid var(--line) !important;
+  background: #f1f5f5 !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+}
+.hero-badge, .tag, .formula-chip, .days-badge, .tag-live, .tag-db {
+  border-color: var(--line) !important;
+  background: #f1f5f5 !important;
+  color: #536b72 !important;
+  box-shadow: none !important;
+}
+.mode-switch-strip, .audio-unlock-banner {
+  background: #fff !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+.mode-btn {
+  border-color: #cfdcde !important;
+  background: #fff !important;
+  color: #405c64 !important;
+  box-shadow: none !important;
+}
+.mode-btn.active, .run-inspect-btn, .unlock-btn {
+  border-color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+.mode-btn.active:hover, .run-inspect-btn:hover, .unlock-btn:hover {
+  background: #105361 !important;
+}
+.chart-container { min-height: 250px; }
+.phone-screen { border: 1px solid var(--line) !important; }
+.app-topbar, .app-crowd-card, .demographic-card, .app-water-status, .safe-window-card,
+.township-value-box {
+  background: #f6f9f9 !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+.video-stage, .image-stage { background: #1d2b29 !important; }
+.empty-state, .no-img-placeholder { color: var(--muted) !important; }
+
+details.data-details {
+  margin-top: 18px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+details.data-details > summary {
+  padding: 15px 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+details.data-details[open] > summary { border-bottom: 1px solid var(--line); }
+.data-note {
+  margin: 0 0 18px;
+  border-left: 3px solid #86aeb5;
+  padding: 10px 14px;
+  background: #edf4f5;
+  color: #536b72;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.empty-data {
+  padding: 22px 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 1000px) {
+  .master-header { flex-wrap: wrap; gap: 0 16px; padding-top: 10px; }
+  .header-nav { order: 3; width: 100%; justify-content: flex-start; overflow-x: auto; gap: 22px !important; }
+  .nav-tab-btn { min-height: 42px; flex-shrink: 0; }
+  .master-main { padding: 24px 5% 32px !important; }
+  .command-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 650px) {
+  .master-header { padding: 12px 5% 0; }
+  .prototype-label { display: none; }
+  .header-right { margin-left: auto; }
+  .model-status { max-width: 148px; overflow: hidden; text-overflow: ellipsis; }
+  .master-footer { align-items: flex-start; flex-direction: column; }
+}
+
+/* Navigation polish, 2026-10-22: presentation only, existing local workflows retained. */
+.aquapulse-root { background: radial-gradient(ellipse at 90% 0, #e4f2f0, transparent 45%), #f5f8fa !important; }
+.aquapulse-root .master-header {
+  position: relative; display: grid; grid-template-columns: 1fr auto;
+  gap: 22px; padding: 24px 4.5% 20px; min-height: 0;
+  background: #ffffffed !important; border-bottom: 1px solid #dce8eb !important;
+}
+.aquapulse-root .header-left { grid-column: 1; grid-row: 1; }
+.aquapulse-root .header-right { grid-column: 2; grid-row: 1; }
+.aquapulse-root .brand-logo { gap: 12px !important; }
+.aquapulse-root .logo-pulse-circle {
+  width: 40px !important; height: 40px !important; border-radius: 12px !important;
+  background: linear-gradient(145deg, #1b9d9b, #0b6177) !important;
+  box-shadow: 0 4px 12px #145c7220 !important; position: relative;
+}
+.logo-pulse-circle::after { content: ''; position: absolute; inset: 12px 8px; border-top: 2px solid #e4ffff; border-bottom: 2px solid #e4ffff; border-radius: 40%; transform: rotate(-10deg); }
+.aquapulse-root .logo-text { font-size: 24px !important; letter-spacing: -.8px !important; }
+.aquapulse-root .prototype-label { border: 1px solid #dde8eb; border-radius: 20px; padding: 5px 10px; font-size: 10px; }
+.aquapulse-root .model-status { border: 1px solid #eadfcf; background: #fbf7f0; color: #87663c; border-radius: 20px; padding: 7px 12px; font-size: 11px; }
+.aquapulse-root .audio-toggle-btn { width: 38px; height: 38px; padding: 0 !important; border-radius: 10px !important; font-size: 16px; }
+.aquapulse-root .header-nav {
+  grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%; order: initial; overflow: visible; gap: 8px !important;
+  background: #edf3f5 !important; border: 1px solid #e0eaed !important;
+  border-radius: 16px; padding: 6px !important;
+}
+.aquapulse-root .nav-tab-btn {
+  display: flex; align-items: center; justify-content: flex-start; gap: 12px;
+  min-height: 58px; padding: 10px 18px !important; border-radius: 11px !important;
+  border: 1px solid transparent !important; color: #587480 !important;
+  transition: background .18s, color .18s, box-shadow .18s;
+}
+.aquapulse-root .nav-tab-btn:hover { background: #ffffffa8 !important; color: #126b77 !important; }
+.aquapulse-root .nav-tab-btn.active {
+  background: #fff !important; border-color: #cbdfe3 !important; color: #08767b !important;
+  box-shadow: 0 3px 9px #1e4a6010 !important;
+}
+.aquapulse-root .nav-tab-btn.active::after { display: none; }
+.aquapulse-root .tab-label { font-size: 13px !important; font-weight: 600; }
+.menu-symbol { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; }
+.menu-symbol svg { width: 22px; height: 22px; }
+.active .menu-symbol { background: #e0f3ef; }
+.menu-dot { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.active .menu-dot { background: #0b8586; }
+.aquapulse-root .master-main { padding-top: 28px !important; }
+.aquapulse-root [class$='-card'], .aquapulse-root [class$='-panel'], .aquapulse-root .privacy-viewer, .aquapulse-root .video-library {
+  border-radius: 14px !important; border-color: #dde7eb !important; box-shadow: 0 5px 20px #214c5906 !important;
+}
+.aquapulse-root .agent-banner { border-radius: 12px !important; padding: 20px 24px; }
+.aquapulse-root .mode-switch-strip { border-radius: 12px; padding: 10px 14px; }
+.aquapulse-root .mode-btn { border-radius: 8px; padding: 10px 16px; }
+.aquapulse-root .mode-btn.active, .aquapulse-root .run-inspect-btn, .aquapulse-root .unlock-btn { background: #087f83 !important; border-color: #087f83 !important; border-radius: 8px; }
+.aquapulse-root .audio-unlock-banner { border-radius: 10px; padding: 12px 18px; background: #eaf3f5 !important; font-size: 12px; }
+.aquapulse-root .video-stage, .aquapulse-root .image-stage { background: radial-gradient(ellipse at 50% 10%, #2c5e6a, #173a46) !important; }
+.aquapulse-root .data-details { border-radius: 10px; border-color: #dfe8ec; }
+.aquapulse-root .master-footer { background: transparent !important; font-size: 11px; }
+@media (max-width: 1000px) {
+  .aquapulse-root .master-header { gap: 18px; }
+  .aquapulse-root .nav-tab-btn { gap: 8px; padding: 10px 12px !important; }
+  .menu-dot { display: none; }
+}
+@media (max-width: 760px) {
+  .aquapulse-root .master-header { padding: 18px 5%; gap: 16px; }
+  .aquapulse-root .logo-text { font-size: 21px !important; }
+  .aquapulse-root .logo-pulse-circle { width: 34px !important; height: 34px !important; border-radius: 10px !important; }
+  .aquapulse-root .prototype-label { display: none; }
+  .aquapulse-root .header-right { flex-wrap: wrap; justify-content: flex-end; gap: 6px !important; }
+  .aquapulse-root .model-status { max-width: 132px; white-space: normal; font-size: 10px; line-height: 1.3; padding: 6px 9px; }
+  .aquapulse-root .header-nav { grid-template-columns: 1fr 1fr; gap: 5px !important; padding: 5px !important; border-radius: 13px; }
+  .aquapulse-root .nav-tab-btn { min-height: 54px; padding: 8px !important; gap: 8px; }
+  .aquapulse-root .tab-label { font-size: 12px !important; }
+  .menu-symbol { width: 28px; height: 28px; border-radius: 7px; }
+  .menu-symbol svg { width: 19px; height: 19px; }
+  .aquapulse-root .master-main { padding: 22px 5% 30px !important; }
+}
+@media (prefers-reduced-motion: reduce) { .aquapulse-root .nav-tab-btn { transition: none; } }
+
+/* Keep dense supporting tables inside their panels on smaller displays. */
+.aquapulse-root .panel-box, .aquapulse-root .gauge-card { min-width: 0; }
+.aquapulse-root .tickets-table-wrap { overflow-x: auto; max-width: 100%; }
+@media (max-width: 1100px) {
+  .aquapulse-root .diagnostic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aquapulse-root .water-bottom-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .aquapulse-root .diagnostic-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1100px) {
+  .aquapulse-root .gauges-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .aquapulse-root .diagnostic-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 760px) {
+  .aquapulse-root .gauges-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 1000px) {
+  .aquapulse-root .resident-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .aquapulse-root .resident-grid > * { min-width: 0; max-width: 100%; }
+  .aquapulse-root .smartphone-frame { width: min(360px, 100%); margin-inline: auto; }
+}
+.aquapulse-root .grid-left, .aquapulse-root .grid-right { min-width: 0; }
+@media (max-width: 760px) {
+  .aquapulse-root .command-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .aquapulse-root .viewer-topline, .aquapulse-root .viewer-controls, .aquapulse-root .timeline-header,
+  .aquapulse-root .markers-legend, .aquapulse-root .mode-switch-strip, .aquapulse-root .audio-unlock-banner { flex-wrap: wrap; gap: 10px; }
+  .aquapulse-root .compliance-badge { white-space: normal; font-size: 10px; }
+  .aquapulse-root .placeholder-content { max-width: 100%; padding: 18px; }
+  .aquapulse-root .placeholder-content p, .aquapulse-root .active-source-badge { white-space: normal; overflow-wrap: anywhere; }
+  .aquapulse-root .charts-row, .aquapulse-root .metrics-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .aquapulse-root .hero-header { flex-wrap: wrap; gap: 16px; }
+  .aquapulse-root .hero-title-section { max-width: 100%; }
+}
+@media (max-width: 760px) {
+  .aquapulse-root .hero-right { max-width: 100%; min-width: 0; }
+  .aquapulse-root .privacy-seal { white-space: normal; max-width: 100%; line-height: 1.6; }
+  .aquapulse-root .dow-selector { display: flex; flex-wrap: wrap; max-width: 100%; }
+}
+/* Readable playback controls within the light workspace. */
+.aquapulse-root .viewer-controls { background: #eef4f6; border: 1px solid #dae6eb; border-radius: 9px; color: #294f5f; }
+.aquapulse-root .viewer-controls button { color: #2b5967; background: #fff; border-color: #cddfe5; border-radius: 6px; }
+.aquapulse-root .viewer-controls button.active { color: #fff; background: #087f83; }
+.aquapulse-root .viewer-controls .time-display { color: #31586a; }
+.aquapulse-root .speed-selector { background: #e4eef1; border-radius: 7px; }
+.aquapulse-root .stage-placeholder { padding: 16px; }
+.aquapulse-root .placeholder-content { width: 100%; min-width: 0; }
+.aquapulse-root .placeholder-content p { color: #b7ced5; white-space: normal; line-height: 1.7; }
+.aquapulse-root .nav-tab-btn.active { background: #fff !important; }
+.aquapulse-root .privacy-mode-toggle { background: #eef4f6; border: 1px solid #dce7eb; border-radius: 8px; }
+.aquapulse-root .privacy-mode-toggle button { color: #496b78; border-radius: 6px; }
+.aquapulse-root .privacy-mode-toggle button.active { color: #08777e; background: #dcefee; }

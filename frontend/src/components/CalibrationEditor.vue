@@ -105,7 +105,7 @@ async function saveAndProcess() {
           <polygon
             :points="cal.pool_corners_norm.map(p => `${p[0] * 100},${p[1] * 100}`).join(' ')"
             fill="rgba(0, 229, 255, 0.18)"
-            stroke="#00E5FF"
+            stroke="#176776"
             stroke-width="0.8"
           />
         </svg>
@@ -177,7 +177,7 @@ async function saveAndProcess() {
 }
 
 .calibration-modal {
-  background: #0F1A24;
+  background: #FFFFFF;
   border: 1px solid rgba(0, 229, 255, 0.4);
   border-radius: 12px;
   width: 100%;
@@ -206,14 +206,14 @@ async function saveAndProcess() {
 
 .modal-sub {
   font-size: 0.82rem;
-  color: #9FB3C8;
+  color: #5F737A;
   margin: 0.25rem 0 0 0;
 }
 
 .close-btn {
   background: transparent;
   border: none;
-  color: #829AB1;
+  color: #617981;
   font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
@@ -230,7 +230,7 @@ async function saveAndProcess() {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #081018;
+  background: #F5F8F9;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(51, 78, 104, 0.6);
@@ -260,13 +260,13 @@ async function saveAndProcess() {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
   font-weight: 800;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   border: 2px solid #FFFFFF;
-  box-shadow: 0 0 12px #00E5FF;
+  box-shadow: 0 0 12px #176776;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -281,17 +281,17 @@ async function saveAndProcess() {
 }
 
 .corner-handle.active {
-  background: #FF1744;
+  background: #A34E42;
   border-color: #FFFFFF;
   color: #FFFFFF;
-  box-shadow: 0 0 18px #FF1744;
+  box-shadow: 0 0 18px #A34E42;
   transform: translate(-50%, -50%) scale(1.25);
   animation: pulse-corner 1s infinite alternate;
 }
 
 @keyframes pulse-corner {
-  from { box-shadow: 0 0 10px #FF1744; }
-  to { box-shadow: 0 0 25px #FF1744; }
+  from { box-shadow: 0 0 10px #A34E42; }
+  to { box-shadow: 0 0 25px #A34E42; }
 }
 
 .calibration-controls {
@@ -312,16 +312,16 @@ async function saveAndProcess() {
 
 .ctrl-group label {
   font-size: 0.72rem;
-  color: #829AB1;
+  color: #617981;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .ctrl-group select {
-  background: #081018;
+  background: #F5F8F9;
   border: 1px solid rgba(51, 78, 104, 0.6);
-  color: #E0F2FE;
+  color: #213D46;
   padding: 0.5rem 0.65rem;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -329,7 +329,7 @@ async function saveAndProcess() {
 }
 
 .ctrl-group select:focus {
-  border-color: #00E5FF;
+  border-color: #176776;
 }
 
 .modal-footer {
@@ -342,7 +342,7 @@ async function saveAndProcess() {
 
 .secondary-btn {
   background: transparent;
-  color: #9FB3C8;
+  color: #5F737A;
   border: 1px solid rgba(51, 78, 104, 0.5);
   padding: 0.55rem 1.15rem;
   border-radius: 6px;
@@ -358,8 +358,8 @@ async function saveAndProcess() {
 }
 
 .primary-btn {
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
   border: none;
   padding: 0.55rem 1.35rem;
   border-radius: 6px;

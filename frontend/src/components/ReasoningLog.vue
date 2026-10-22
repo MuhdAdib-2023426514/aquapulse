@@ -15,8 +15,8 @@ const thoughts = computed<string[]>(() => {
 <template>
   <div class="reasoning-card">
     <div class="reasoning-topline">
-      <h4>🧠 Live System 1 &amp; System 2 Reasoning Stream</h4>
-      <span class="subtle">Autonomous Thought &amp; Escalation Trace</span>
+      <h4>🧠 Analysis notes</h4>
+      <span class="subtle">Experimental cues; review manually</span>
     </div>
 
     <div class="thoughts-terminal">
@@ -27,7 +27,7 @@ const thoughts = computed<string[]>(() => {
         </span>
       </div>
       <div v-if="!thoughts.length" class="empty-log">
-        <span>Awaiting agent escalation events...</span>
+        <span>No analysis notes for this clip.</span>
       </div>
     </div>
   </div>
@@ -59,11 +59,11 @@ const thoughts = computed<string[]>(() => {
 
 .subtle {
   font-size: 0.7rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .thoughts-terminal {
-  background: #081018;
+  background: #F5F8F9;
   border: 1px solid rgba(51, 78, 104, 0.5);
   border-radius: 6px;
   padding: 0.75rem;
@@ -83,11 +83,11 @@ const thoughts = computed<string[]>(() => {
 }
 
 .prompt-sym {
-  color: #00E5FF;
+  color: #176776;
 }
 
 .log-text {
-  color: #CBD2D9;
+  color: #4B6269;
 }
 
 .log-text.alert {
@@ -95,7 +95,7 @@ const thoughts = computed<string[]>(() => {
 }
 
 .empty-log {
-  color: #627D98;
+  color: #72858B;
   font-style: italic;
 }
 </style>

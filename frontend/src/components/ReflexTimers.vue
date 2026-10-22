@@ -47,7 +47,7 @@ const activeViolationTracks = computed(() => {
           class="progress-fill"
           :style="{
             width: `${Math.min(100, (t.submersion_sec / 20.0) * 100)}%`,
-            backgroundColor: t.submersion_sec >= 20.0 ? '#FF1744' : t.submersion_sec >= 10.0 ? '#FFEA00' : '#00E5FF'
+            backgroundColor: t.submersion_sec >= 20.0 ? '#A34E42' : t.submersion_sec >= 10.0 ? '#B1782A' : '#176776'
           }"
         ></div>
         <!-- 10s VERIFY marker -->
@@ -120,12 +120,12 @@ const activeViolationTracks = computed(() => {
   border: 1px dashed rgba(51, 78, 104, 0.4);
   border-radius: 6px;
   font-size: 0.8rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .empty-timers small {
   font-size: 0.7rem;
-  color: #627D98;
+  color: #72858B;
 }
 
 .timer-row {
@@ -139,11 +139,11 @@ const activeViolationTracks = computed(() => {
 }
 
 .distress-timer {
-  border-left: 3px solid #FF1744;
+  border-left: 3px solid #A34E42;
 }
 
 .violation-timer {
-  border-left: 3px solid #FF9100;
+  border-left: 3px solid #A56535;
 }
 
 .timer-top {
@@ -164,22 +164,22 @@ const activeViolationTracks = computed(() => {
 
 .timer-badge.critical_emergency {
   background: rgba(255, 23, 68, 0.2);
-  color: #FF1744;
+  color: #A34E42;
 }
 
 .timer-badge.verify {
   background: rgba(255, 234, 0, 0.2);
-  color: #FFEA00;
+  color: #B1782A;
 }
 
 .timer-badge.normal {
   background: rgba(0, 255, 102, 0.2);
-  color: #00FF66;
+  color: #397A68;
 }
 
 .timer-badge.nudge {
   background: rgba(255, 145, 0, 0.2);
-  color: #FF9100;
+  color: #A56535;
 }
 
 .progress-track {
@@ -204,17 +204,17 @@ const activeViolationTracks = computed(() => {
   transform: translateX(-50%);
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.62rem;
-  color: #829AB1;
+  color: #617981;
 }
 
-.marker-verify { color: #FFEA00; }
-.marker-critical { color: #FF1744; }
+.marker-verify { color: #B1782A; }
+.marker-critical { color: #A34E42; }
 
 .timer-sub {
   font-size: 0.75rem;
-  color: #9FB3C8;
+  color: #5F737A;
 }
 
-.text-green { color: #00FF66; }
-.text-red { color: #FF1744; font-weight: 600; }
+.text-green { color: #397A68; }
+.text-red { color: #A34E42; font-weight: 600; }
 </style>

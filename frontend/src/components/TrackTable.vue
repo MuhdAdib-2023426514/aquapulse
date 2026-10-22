@@ -138,8 +138,8 @@ async function applyOverrides() {
 }
 
 .apply-override-btn {
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
   border: none;
   font-size: 0.75rem;
   font-weight: 700;
@@ -162,7 +162,7 @@ async function applyOverrides() {
 }
 
 .tracks-table th {
-  color: #829AB1;
+  color: #617981;
   border-bottom: 1px solid rgba(51, 78, 104, 0.5);
   padding: 0.45rem 0.6rem;
   font-size: 0.7rem;
@@ -172,13 +172,13 @@ async function applyOverrides() {
 .tracks-table td {
   padding: 0.5rem 0.6rem;
   border-bottom: 1px solid rgba(51, 78, 104, 0.2);
-  color: #E0F2FE;
+  color: #213D46;
 }
 
 .role-select {
-  background: #081018;
+  background: #F5F8F9;
   border: 1px solid rgba(51, 78, 104, 0.5);
-  color: #00E5FF;
+  color: #176776;
   font-size: 0.75rem;
   padding: 0.2rem 0.45rem;
   border-radius: 4px;
@@ -196,13 +196,13 @@ async function applyOverrides() {
 .posture-badge.horizontal_submerged,
 .posture-badge.active_flailing {
   background: rgba(255, 23, 68, 0.2);
-  color: #FF1744;
+  color: #A34E42;
 }
 
 .violation-chip {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
-  color: #FF9100;
+  color: #A56535;
   background: rgba(255, 145, 0, 0.15);
   padding: 0.15rem 0.4rem;
   border-radius: 3px;
@@ -215,16 +215,16 @@ async function applyOverrides() {
   border-radius: 50%;
 }
 
-.status-dot.normal { background: #00FF66; }
-.status-dot.caution { background: #FFEA00; }
-.status-dot.emergency { background: #FF1744; box-shadow: 0 0 6px #FF1744; }
-.status-dot.nudge { background: #FF9100; }
+.status-dot.normal { background: #397A68; }
+.status-dot.caution { background: #B1782A; }
+.status-dot.emergency { background: #A34E42; box-shadow: 0 0 6px #A34E42; }
+.status-dot.nudge { background: #A56535; }
 
-.text-muted { color: #627D98; }
+.text-muted { color: #72858B; }
 
 .empty-cell {
   text-align: center;
-  color: #829AB1;
+  color: #617981;
   padding: 1.25rem;
   font-size: 0.78rem;
 }

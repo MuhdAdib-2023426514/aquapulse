@@ -9,9 +9,9 @@ const duration = computed(() => store.activeJob?.duration_sec || 1.0)
 const events = computed(() => store.events)
 
 function eventColor(ev: TimelineEvent): string {
-  if (ev.kind.includes('emergency') || ev.kind.includes('siren')) return '#FF1744'
-  if (ev.kind.includes('beacon') || ev.kind.includes('caution')) return '#FFEA00'
-  if (ev.kind.includes('nudge')) return '#00E5FF'
+  if (ev.kind.includes('emergency') || ev.kind.includes('siren')) return '#A34E42'
+  if (ev.kind.includes('beacon') || ev.kind.includes('caution')) return '#B1782A'
+  if (ev.kind.includes('nudge')) return '#176776'
   if (ev.kind.includes('guard')) return '#B388FF'
   if (ev.kind.includes('cleaner')) return '#69F0AE'
   return '#FFFFFF'
@@ -53,9 +53,9 @@ function seekToEvent(ev: TimelineEvent) {
 
     <!-- Legend -->
     <div class="markers-legend">
-      <span><i style="background:#FFEA00"></i> Verify Beacon (10s)</span>
-      <span><i style="background:#FF1744"></i> Emergency Siren (20s)</span>
-      <span><i style="background:#00E5FF"></i> Polite Nudge (15s)</span>
+      <span><i style="background:#B1782A"></i> Verify Beacon (10s)</span>
+      <span><i style="background:#A34E42"></i> Emergency Siren (20s)</span>
+      <span><i style="background:#176776"></i> Polite Nudge (15s)</span>
       <span><i style="background:#B388FF"></i> Guard Ticket (30s)</span>
       <span><i style="background:#69F0AE"></i> Cleaner Ticket</span>
     </div>
@@ -83,12 +83,12 @@ function seekToEvent(ev: TimelineEvent) {
 
 .events-count {
   font-weight: 700;
-  color: #00E5FF;
+  color: #176776;
   font-family: 'JetBrains Mono', monospace;
 }
 
 .timeline-header small {
-  color: #829AB1;
+  color: #617981;
   font-size: 0.7rem;
 }
 
@@ -131,7 +131,7 @@ function seekToEvent(ev: TimelineEvent) {
   display: flex;
   gap: 0.85rem;
   font-size: 0.68rem;
-  color: #9FB3C8;
+  color: #5F737A;
   flex-wrap: wrap;
 }
 

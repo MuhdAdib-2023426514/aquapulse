@@ -69,9 +69,9 @@ const forecastChartOption = computed(() => {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#0F1A24',
-      borderColor: '#00E5FF',
-      textStyle: { color: '#E0F2FE', fontFamily: 'JetBrains Mono' },
+      backgroundColor: '#FFFFFF',
+      borderColor: '#176776',
+      textStyle: { color: '#213D46', fontFamily: 'JetBrains Mono' },
       formatter: (params: any) => {
         const item = forecast[params[0].dataIndex]
         return `<b>${item.hour}:00</b><br/>Forecast: <b>${item.predicted_headcount} bathers</b> (${item.crowd_level})<br/>Focus: ${item.activity_focus}<br/>Recommended For: <i>${item.recommended_for}</i>`
@@ -81,14 +81,14 @@ const forecastChartOption = computed(() => {
     xAxis: {
       type: 'category',
       data: hours,
-      axisLine: { lineStyle: { color: '#334E68' } },
-      axisLabel: { color: '#9FB3C8', interval: 2 },
+      axisLine: { lineStyle: { color: '#DCE6E9' } },
+      axisLabel: { color: '#5F737A', interval: 2 },
     },
     yAxis: {
       type: 'value',
       name: 'Expected Bathers',
-      axisLine: { lineStyle: { color: '#334E68' } },
-      axisLabel: { color: '#9FB3C8' },
+      axisLine: { lineStyle: { color: '#DCE6E9' } },
+      axisLabel: { color: '#5F737A' },
       splitLine: { lineStyle: { color: 'rgba(51, 78, 104, 0.2)' } },
     },
     series: [
@@ -98,14 +98,14 @@ const forecastChartOption = computed(() => {
         data: counts.map((c: number) => ({
           value: c,
           itemStyle: {
-            color: c <= 4 ? '#00FF66' : c <= 12 ? '#FFEA00' : '#00E5FF',
+            color: c <= 4 ? '#397A68' : c <= 12 ? '#B1782A' : '#176776',
             borderRadius: [4, 4, 0, 0],
           },
         })),
         markLine: {
           silent: true,
-          lineStyle: { color: '#FF1744', type: 'dashed' },
-          data: [{ yAxis: 15, label: { formatter: 'High Crowd Threshold (15+)', color: '#FF1744' } }],
+          lineStyle: { color: '#A34E42', type: 'dashed' },
+          data: [{ yAxis: 15, label: { formatter: 'High Crowd Threshold (15+)', color: '#A34E42' } }],
         },
       },
     ],
@@ -118,17 +118,13 @@ const forecastChartOption = computed(() => {
     <!-- Header Banner -->
     <div class="resident-hero-card">
       <div class="hero-left">
-        <div class="hero-badge">TRACK 1: PEOPLE — COMMUNITY HARMONY & INCLUSIVITY</div>
-        <h2>Resident Township App: "Crowd & Comfort" Smart Companion</h2>
-        <p class="hero-desc">
-          Published seamlessly to Sime Darby Property's township resident mobile app (e.g. City of Elmina / Bandar Bukit Raja).
-          Anonymous, real-time crowd insights, water clarity, and diurnal forecasts empower families, lap swimmers,
-          and senior citizens to plan optimal pool visits without facing overcrowding.
-        </p>
+        <div class="hero-badge">SAMPLE FORECAST</div>
+        <h2>Pool crowd preview</h2>
+        <p class="hero-desc">Illustrative occupancy and visit-time examples. No live camera or resident data is connected.</p>
       </div>
       <div class="hero-right">
         <span class="privacy-seal">
-          🔒 100% PDPA Compliant &bull; Zero Facial ID
+          🔒 Prototype privacy view &bull; Zero Facial ID
         </span>
       </div>
     </div>
@@ -148,8 +144,8 @@ const forecastChartOption = computed(() => {
           <div class="phone-screen">
             <!-- App Header -->
             <div class="app-topbar">
-              <span class="app-brand">Elmina Living &bull; Pool Club</span>
-              <span class="live-pill">LIVE NOW</span>
+              <span class="app-brand">Resident sample</span>
+              <span class="live-pill">SAMPLE</span>
             </div>
 
             <!-- Crowd Hero Card -->
@@ -225,8 +221,8 @@ const forecastChartOption = computed(() => {
       <div class="forecast-panel">
         <div class="forecast-header">
           <div>
-            <h3>24-Hour Diurnal Crowd & Atmosphere Forecast</h3>
-            <p class="forecast-subtitle">Statistical machine learning profile predicting crowd dynamics for township planning</p>
+            <h3>Example crowd forecast</h3>
+            <p class="forecast-subtitle">Seeded sample forecast; not a live occupancy feed</p>
           </div>
           <!-- Day of Week Selector -->
           <div class="dow-selector">
@@ -261,16 +257,7 @@ const forecastChartOption = computed(() => {
             <span>Peak Crowd (>12) — High Energy & Children Play</span>
           </div>
         </div>
-
-        <!-- Township Value Card -->
-        <div class="township-value-box">
-          <h4>🏛️ Sime Darby Property Strategic Township Alignment</h4>
-          <ul>
-            <li><b>Reduces Resident Friction</b>: Lap swimmers avoid family play hours; toddlers swim safely in quiet morning slots.</li>
-            <li><b>Zero Biometric Intrusion</b>: Headcount telemetry is computed at the edge with Tier-2 silhouette rendering so resident privacy is 100% protected under PDPA 2024.</li>
-            <li><b>JMB Inclusivity Governance</b>: Enables Joint Management Bodies to designate protected safe swimming slots with empirical crowd data.</li>
-          </ul>
-        </div>
+        <p class="data-note">All values on this page are illustrative sample data. They do not describe current residents or pool conditions.</p>
       </div>
     </div>
   </div>
@@ -301,7 +288,7 @@ const forecastChartOption = computed(() => {
 .hero-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: #00E5FF;
+  color: #176776;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
 }
@@ -315,7 +302,7 @@ const forecastChartOption = computed(() => {
 
 .hero-desc {
   font-size: 0.9rem;
-  color: #9FB3C8;
+  color: #5F737A;
   line-height: 1.45;
   margin: 0;
 }
@@ -324,7 +311,7 @@ const forecastChartOption = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   background: rgba(0, 255, 102, 0.15);
-  color: #00FF66;
+  color: #397A68;
   border: 1px solid rgba(0, 255, 102, 0.4);
   padding: 0.5rem 0.85rem;
   border-radius: 20px;
@@ -347,7 +334,7 @@ const forecastChartOption = computed(() => {
 
 .smartphone-frame {
   width: 340px;
-  background: #081018;
+  background: #F5F8F9;
   border: 8px solid #1E293B;
   border-radius: 36px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 229, 255, 0.2);
@@ -367,19 +354,19 @@ const forecastChartOption = computed(() => {
 .speaker-pill {
   width: 48px;
   height: 4px;
-  background: #334E68;
+  background: #DCE6E9;
   border-radius: 2px;
 }
 
 .camera-dot {
   width: 6px;
   height: 6px;
-  background: #334E68;
+  background: #DCE6E9;
   border-radius: 50%;
 }
 
 .phone-screen {
-  background: #0F1A24;
+  background: #FFFFFF;
   border-radius: 24px;
   padding: 1rem;
   display: flex;
@@ -405,7 +392,7 @@ const forecastChartOption = computed(() => {
 .live-pill {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
-  color: #00FF66;
+  color: #397A68;
   background: rgba(0, 255, 102, 0.15);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
@@ -442,7 +429,7 @@ const forecastChartOption = computed(() => {
 
 .crowd-title {
   font-size: 0.75rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .crowd-badge {
@@ -453,9 +440,9 @@ const forecastChartOption = computed(() => {
   border-radius: 4px;
 }
 
-.crowd-badge.quiet { background: rgba(0, 255, 102, 0.2); color: #00FF66; }
-.crowd-badge.moderate { background: rgba(255, 234, 0, 0.2); color: #FFEA00; }
-.crowd-badge.busy { background: rgba(255, 23, 68, 0.2); color: #FF1744; }
+.crowd-badge.quiet { background: rgba(0, 255, 102, 0.2); color: #397A68; }
+.crowd-badge.moderate { background: rgba(255, 234, 0, 0.2); color: #B1782A; }
+.crowd-badge.busy { background: rgba(255, 23, 68, 0.2); color: #A34E42; }
 
 .crowd-count-num {
   font-family: 'JetBrains Mono', monospace;
@@ -466,13 +453,13 @@ const forecastChartOption = computed(() => {
 
 .crowd-count-num .unit {
   font-size: 0.8rem;
-  color: #9FB3C8;
+  color: #5F737A;
   font-weight: 500;
 }
 
 .crowd-advice {
   font-size: 0.75rem;
-  color: #CBD2D9;
+  color: #4B6269;
   line-height: 1.35;
   margin: 0;
 }
@@ -489,7 +476,7 @@ const forecastChartOption = computed(() => {
 
 .card-subtitle {
   font-size: 0.7rem;
-  color: #829AB1;
+  color: #617981;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -504,13 +491,13 @@ const forecastChartOption = computed(() => {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #CBD2D9;
+  color: #4B6269;
 }
 
 .demo-val {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  color: #00E5FF;
+  color: #176776;
 }
 
 .app-water-status {
@@ -534,7 +521,7 @@ const forecastChartOption = computed(() => {
 
 .water-text .label {
   font-size: 0.65rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .water-text .val {
@@ -576,7 +563,7 @@ const forecastChartOption = computed(() => {
 
 .window-details .time {
   font-size: 0.7rem;
-  color: #00E5FF;
+  color: #176776;
   font-family: 'JetBrains Mono', monospace;
 }
 
@@ -605,7 +592,7 @@ const forecastChartOption = computed(() => {
 
 .forecast-subtitle {
   font-size: 0.78rem;
-  color: #829AB1;
+  color: #617981;
   margin: 0.25rem 0 0 0;
 }
 
@@ -621,7 +608,7 @@ const forecastChartOption = computed(() => {
 .dow-btn {
   background: transparent;
   border: none;
-  color: #9FB3C8;
+  color: #5F737A;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.35rem 0.65rem;
@@ -635,8 +622,8 @@ const forecastChartOption = computed(() => {
 }
 
 .dow-btn.active {
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
 }
 
 .chart-container {
@@ -654,7 +641,7 @@ const forecastChartOption = computed(() => {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  color: #9FB3C8;
+  color: #5F737A;
 }
 
 .chip .dot {
@@ -663,13 +650,13 @@ const forecastChartOption = computed(() => {
   border-radius: 50%;
 }
 
-.quiet-chip .dot { background: #00FF66; }
-.mod-chip .dot { background: #FFEA00; }
-.busy-chip .dot { background: #00E5FF; }
+.quiet-chip .dot { background: #397A68; }
+.mod-chip .dot { background: #B1782A; }
+.busy-chip .dot { background: #176776; }
 
 .township-value-box {
   background: rgba(11, 22, 34, 0.6);
-  border-left: 3px solid #00E5FF;
+  border-left: 3px solid #176776;
   border-radius: 0 8px 8px 0;
   padding: 1rem 1.25rem;
 }
@@ -684,11 +671,11 @@ const forecastChartOption = computed(() => {
   margin: 0;
   padding-left: 1.25rem;
   font-size: 0.8rem;
-  color: #9FB3C8;
+  color: #5F737A;
   line-height: 1.5;
 }
 
 .township-value-box li b {
-  color: #E0F2FE;
+  color: #213D46;
 }
 </style>

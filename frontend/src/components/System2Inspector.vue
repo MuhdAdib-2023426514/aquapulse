@@ -103,7 +103,7 @@ function getCropUrl(relPath: string): string {
 
 .sys2-sub {
   font-size: 0.7rem;
-  color: #00E5FF;
+  color: #176776;
   font-family: 'JetBrains Mono', monospace;
 }
 
@@ -113,12 +113,12 @@ function getCropUrl(relPath: string): string {
   border-radius: 6px;
   padding: 1rem;
   font-size: 0.8rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .empty-sys2 small {
   font-size: 0.7rem;
-  color: #627D98;
+  color: #72858B;
 }
 
 .inspection-item {
@@ -144,7 +144,7 @@ function getCropUrl(relPath: string): string {
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid rgba(0, 229, 255, 0.4);
-  background: #081018;
+  background: #F5F8F9;
   flex-shrink: 0;
 }
 
@@ -161,7 +161,7 @@ function getCropUrl(relPath: string): string {
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
-  color: #627D98;
+  color: #72858B;
 }
 
 .redaction-chip {
@@ -195,7 +195,7 @@ function getCropUrl(relPath: string): string {
 .backend-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.62rem;
-  color: #00FF66;
+  color: #397A68;
   background: rgba(0, 255, 102, 0.15);
   padding: 0.1rem 0.35rem;
   border-radius: 3px;
@@ -204,7 +204,7 @@ function getCropUrl(relPath: string): string {
 .verdict-chip {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.68rem;
-  color: #FF9100;
+  color: #A56535;
   background: rgba(255, 145, 0, 0.15);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
@@ -213,13 +213,13 @@ function getCropUrl(relPath: string): string {
 }
 
 .verdict-chip.verified {
-  color: #FF5252;
+  color: #A34E42;
   background: rgba(255, 82, 82, 0.15);
 }
 
 .reasoning-p {
   font-size: 0.75rem;
-  color: #CBD2D9;
+  color: #4B6269;
   line-height: 1.35;
   margin: 0;
 }
@@ -233,7 +233,7 @@ function getCropUrl(relPath: string): string {
 
 .chain-title {
   font-size: 0.68rem;
-  color: #829AB1;
+  color: #617981;
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -241,7 +241,7 @@ function getCropUrl(relPath: string): string {
 .steps-list {
   margin: 0.25rem 0 0 1rem;
   font-size: 0.72rem;
-  color: #00E5FF;
+  color: #176776;
 }
 
 .steps-list code {

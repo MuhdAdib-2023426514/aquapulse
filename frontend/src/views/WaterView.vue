@@ -35,28 +35,7 @@ const status = computed(() => currentWaterReport.value?.status ?? 'CRYSTAL_CLEAR
 const ticketOpened = computed(() => currentWaterReport.value?.cleaner_ticket_opened ?? false)
 const recommendedAction = computed(() => currentWaterReport.value?.recommended_action ?? 'Normal automated filtration; no manual intervention required.')
 
-const maintenanceTickets = computed(() => {
-  return waterInspectData.value?.maintenance_tickets || [
-    {
-      id: 104,
-      timestamp: '2026-10-22 06:30:00',
-      status: 'RESOLVED',
-      turbidity_score: 82.0,
-      algae_index: 14.5,
-      debris_count: 0,
-      action_taken: 'Morning floor vacuum completed by facility team.',
-    },
-    {
-      id: 105,
-      timestamp: '2026-10-21 17:45:00',
-      status: 'COMPLETED',
-      turbidity_score: 58.2,
-      algae_index: 28.0,
-      debris_count: 3,
-      action_taken: 'Post-storm skimmer basket clear & shock chlorination.',
-    },
-  ]
-})
+const maintenanceTickets = computed(() => waterInspectData.value?.maintenance_tickets || [])
 
 onMounted(async () => {
   await fetchWaterData()
@@ -79,13 +58,9 @@ async function fetchWaterData() {
     <!-- Header Banner -->
     <div class="water-hero-card">
       <div class="hero-left">
-        <div class="hero-badge">TRACK 4: COMMERCIAL & OPERATIONS — VISUAL WATER CLARITY & DEBRIS</div>
-        <h2>Computer Vision Water Turbidity & Monsoon Debris Inspector</h2>
-        <p class="hero-desc">
-          Automated off-peak pool diagnostics using OpenCV Laplacian floor-tile edge contrast,
-          HSV color-space green-algae drift detection, and floating debris contour analysis to auto-generate
-          morning cleaning work orders for JMB/MC facility teams before costly pool drainages.
-        </p>
+        <div class="hero-badge">SYNTHETIC VISUAL DEMO</div>
+        <h2>Visual water indicators</h2>
+        <p class="hero-desc">Image heuristics only. These values are not water-quality measurements and do not create facility work orders.</p>
       </div>
       <div class="hero-right">
         <button class="run-inspect-btn" :disabled="loadingInspect" @click="fetchWaterData">
@@ -98,7 +73,7 @@ async function fetchWaterData() {
     <div class="gauges-grid">
       <!-- Status Badge Card -->
       <div class="gauge-card status-card">
-        <div class="gauge-label">OVERALL WATER SANITATION STATUS</div>
+        <div class="gauge-label">Visual indicator summary</div>
         <div class="status-hero" :class="status.toLowerCase()">
           <span class="status-icon">
             {{ status === 'CRYSTAL_CLEAR' ? '✨' : status === 'ALGAE_WARNING' ? '⚠️' : '🍂' }}
@@ -106,7 +81,7 @@ async function fetchWaterData() {
           <span class="status-name">{{ status.replace(/_/g, ' ') }}</span>
         </div>
         <div class="status-ticket-badge" v-if="ticketOpened">
-          🎫 JMB Work Order Auto-Generated
+          🎫 Sample maintenance action
         </div>
         <div class="action-note">
           <b>Recommended Action</b>: {{ recommendedAction }}
@@ -189,6 +164,8 @@ async function fetchWaterData() {
       </div>
     </div>
 
+    <details class="data-details">
+      <summary>View image and maintenance details</summary>
     <!-- Visual Diagnostic Frame + JMB Work Orders Grid -->
     <div class="diagnostic-grid">
       <!-- Left: Annotated Diagnostic Frame -->
@@ -206,7 +183,7 @@ async function fetchWaterData() {
           />
           <div v-else class="no-img-placeholder">
             <span class="icon">🌊</span>
-            <span class="msg">Live Water Overlay Available During Video / Scenario Processing</span>
+            <span class="msg">Image overlay appears after video or demo processing</span>
             <span class="hint">Upload clip or step into Monsoon Debris & Algae scenario</span>
           </div>
         </div>
@@ -220,8 +197,8 @@ async function fetchWaterData() {
       <!-- Right: Automated JMB Facility Tickets -->
       <div class="panel-box tickets-panel">
         <div class="panel-header">
-          <h3>Automated JMB / MC Maintenance Work Orders</h3>
-          <span class="tag-db">SQLITE TICKETS</span>
+          <h3>Maintenance records</h3>
+          <span class="tag-db">SAMPLE / API DATA</span>
         </div>
 
         <div class="tickets-table-wrap">
@@ -238,6 +215,9 @@ async function fetchWaterData() {
               </tr>
             </thead>
             <tbody>
+              <tr v-if="maintenanceTickets.length === 0">
+                <td colspan="7" class="empty-data">No maintenance records available.</td>
+              </tr>
               <tr v-for="t in maintenanceTickets" :key="t.id">
                 <td class="mono">#WO-{{ t.id }}</td>
                 <td class="timestamp">{{ t.timestamp }}</td>
@@ -256,6 +236,7 @@ async function fetchWaterData() {
         </div>
       </div>
     </div>
+    </details>
   </div>
 </template>
 
@@ -284,7 +265,7 @@ async function fetchWaterData() {
 .hero-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: #00E5FF;
+  color: #176776;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
 }
@@ -298,15 +279,15 @@ async function fetchWaterData() {
 
 .hero-desc {
   font-size: 0.9rem;
-  color: #9FB3C8;
+  color: #5F737A;
   line-height: 1.45;
   margin: 0;
 }
 
 .run-inspect-btn {
   background: rgba(0, 229, 255, 0.15);
-  color: #00E5FF;
-  border: 1px solid #00E5FF;
+  color: #176776;
+  border: 1px solid #176776;
   border-radius: 8px;
   padding: 0.75rem 1.25rem;
   font-size: 0.85rem;
@@ -316,8 +297,8 @@ async function fetchWaterData() {
 }
 
 .run-inspect-btn:hover:not(:disabled) {
-  background: #00E5FF;
-  color: #081018;
+  background: #176776;
+  color: #F5F8F9;
 }
 
 .run-inspect-btn:disabled {
@@ -352,7 +333,7 @@ async function fetchWaterData() {
   justify-content: space-between;
   align-items: center;
   font-size: 0.72rem;
-  color: #9FB3C8;
+  color: #5F737A;
   font-weight: 600;
   letter-spacing: 0.05em;
 }
@@ -368,25 +349,25 @@ async function fetchWaterData() {
 }
 
 .status-hero.crystal_clear {
-  color: #00FF66;
+  color: #397A68;
 }
 
 .status-hero.slight_turbidity {
-  color: #FFEA00;
+  color: #B1782A;
 }
 
 .status-hero.algae_warning {
-  color: #FF9100;
+  color: #A56535;
 }
 
 .status-hero.monsoon_debris_alert {
-  color: #FF1744;
+  color: #A34E42;
 }
 
 .status-ticket-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: #FF9100;
+  color: #A56535;
   background: rgba(255, 145, 0, 0.15);
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
@@ -396,12 +377,12 @@ async function fetchWaterData() {
 
 .action-note {
   font-size: 0.8rem;
-  color: #9FB3C8;
+  color: #5F737A;
   line-height: 1.35;
   background: rgba(11, 22, 34, 0.5);
   padding: 0.5rem 0.7rem;
   border-radius: 6px;
-  border-left: 2px solid #00E5FF;
+  border-left: 2px solid #176776;
 }
 
 .gauge-hero-val {
@@ -413,19 +394,19 @@ async function fetchWaterData() {
 
 .gauge-hero-val .unit {
   font-size: 0.9rem;
-  color: #9FB3C8;
+  color: #5F737A;
   font-weight: 500;
 }
 
-.text-good { color: #00FF66; }
-.text-alert { color: #FF9100; }
-.text-danger { color: #FF1744; }
+.text-good { color: #397A68; }
+.text-alert { color: #A56535; }
+.text-danger { color: #A34E42; }
 
 .gauge-sub-info {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #829AB1;
+  color: #617981;
 }
 
 .tag {
@@ -436,9 +417,9 @@ async function fetchWaterData() {
   font-weight: 600;
 }
 
-.tag-good { background: rgba(0, 255, 102, 0.15); color: #00FF66; }
-.tag-alert { background: rgba(255, 145, 0, 0.15); color: #FF9100; }
-.tag-danger { background: rgba(255, 23, 68, 0.15); color: #FF1744; }
+.tag-good { background: rgba(0, 255, 102, 0.15); color: #397A68; }
+.tag-alert { background: rgba(255, 145, 0, 0.15); color: #A56535; }
+.tag-danger { background: rgba(255, 23, 68, 0.15); color: #A34E42; }
 
 .bar-wrap {
   width: 100%;
@@ -455,9 +436,9 @@ async function fetchWaterData() {
   transition: width 0.3s ease;
 }
 
-.bar-good { background: #00FF66; }
-.bar-alert { background: #FF9100; }
-.bar-danger { background: #FF1744; }
+.bar-good { background: #397A68; }
+.bar-alert { background: #A56535; }
+.bar-danger { background: #A34E42; }
 
 /* Diagnostic Grid */
 .diagnostic-grid {
@@ -492,7 +473,7 @@ async function fetchWaterData() {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   background: rgba(0, 229, 255, 0.15);
-  color: #00E5FF;
+  color: #176776;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
 }
@@ -501,14 +482,14 @@ async function fetchWaterData() {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   background: rgba(0, 255, 102, 0.15);
-  color: #00FF66;
+  color: #397A68;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
 }
 
 .image-stage {
   min-height: 260px;
-  background: #081018;
+  background: #F5F8F9;
   border: 1px solid rgba(51, 78, 104, 0.5);
   border-radius: 8px;
   overflow: hidden;
@@ -528,7 +509,7 @@ async function fetchWaterData() {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  color: #829AB1;
+  color: #617981;
   text-align: center;
   padding: 2rem;
 }
@@ -539,19 +520,19 @@ async function fetchWaterData() {
 
 .no-img-placeholder .msg {
   font-size: 0.9rem;
-  color: #CBD2D9;
+  color: #4B6269;
 }
 
 .no-img-placeholder .hint {
   font-size: 0.75rem;
-  color: #627D98;
+  color: #72858B;
 }
 
 .stage-footer {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #829AB1;
+  color: #617981;
   margin-top: 0.65rem;
   font-family: 'JetBrains Mono', monospace;
 }
@@ -569,7 +550,7 @@ async function fetchWaterData() {
 }
 
 .tickets-table th {
-  color: #829AB1;
+  color: #617981;
   border-bottom: 1px solid rgba(51, 78, 104, 0.5);
   padding: 0.5rem 0.6rem;
   font-weight: 600;
@@ -580,7 +561,7 @@ async function fetchWaterData() {
 .tickets-table td {
   padding: 0.6rem;
   border-bottom: 1px solid rgba(51, 78, 104, 0.2);
-  color: #E0F2FE;
+  color: #213D46;
 }
 
 .tickets-table tr:hover td {
@@ -593,12 +574,12 @@ async function fetchWaterData() {
 
 .timestamp {
   font-size: 0.75rem;
-  color: #9FB3C8;
+  color: #5F737A;
 }
 
 .action-text {
   font-size: 0.78rem;
-  color: #CBD2D9;
+  color: #4B6269;
 }
 
 .ticket-status-pill {
@@ -612,12 +593,12 @@ async function fetchWaterData() {
 .ticket-status-pill.resolved,
 .ticket-status-pill.completed {
   background: rgba(0, 255, 102, 0.15);
-  color: #00FF66;
+  color: #397A68;
 }
 
 .ticket-status-pill.open,
 .ticket-status-pill.pending {
   background: rgba(255, 145, 0, 0.15);
-  color: #FF9100;
+  color: #A56535;
 }
 </style>

@@ -1,94 +1,41 @@
-/* AquaPulse Modern Global Design System */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
-
 :root {
-  --bg-space: #081018;
-  --bg-surface: #0F1A24;
-  --bg-elevated: #152230;
-  --bg-subtle: #0B1622;
-  --line: rgba(51, 78, 104, 0.4);
-  --line-bright: rgba(0, 229, 255, 0.3);
-
-  --accent-cyan: #00E5FF;
-  --accent-green: #00FF66;
-  --accent-amber: #FFEA00;
-  --accent-orange: #FF9100;
-  --accent-red: #FF1744;
-
-  --text-main: #FFFFFF;
-  --text-dim: #E0F2FE;
-  --text-muted: #9FB3C8;
-  --text-subtle: #627D98;
-
-  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: var(--text-dim);
-  background-color: var(--bg-space);
+  font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  color: #213d46;
+  background: #f5f8f9;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --page: #f5f8f9;
+  --surface: #ffffff;
+  --text: #213d46;
+  --muted: #5f737a;
+  --line: #dce6e9;
+  --accent: #176776;
+  --accent-soft: #e7f1f3;
+  --warning: #a46728;
+  --danger: #a34e42;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+* { box-sizing: border-box; }
+html, body, #app { min-width: 320px; min-height: 100%; margin: 0; }
+body { background: var(--page); color: var(--text); }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; opacity: .55; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #8bb8bf;
+  outline-offset: 3px;
 }
+h1, h2, h3, h4, p { margin-top: 0; }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--bg-space);
-  color: var(--text-dim);
-}
-
-/* Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-subtle);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--line);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-cyan);
-}
-
-/* Typography Helpers */
-.mono {
-  font-family: 'JetBrains Mono', monospace;
-}
-
-button {
-  font-family: inherit;
-}
-
-/* Common Card Base */
 .aquapulse-card {
-  background: rgba(15, 26, 36, 0.85);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 1.25rem;
-  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  padding: 20px;
 }
 
-.aquapulse-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.aquapulse-card-header h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-main);
+@media (max-width: 760px) {
+  .aquapulse-card { padding: 16px; }
 }
