@@ -125,3 +125,35 @@ def test_vision_step_pet_and_stray_animal_governance_and_purge() -> None:
     assert d15["esg_metrics"]["animal_events"] == 2
     assert d15["esg_metrics"]["recommended_vfd_speed_pct"] == 100.0
     assert any("Haiwan peliharaan" in (t.get("audio_tts_text") or "") for t in d15["tool_logs"])
+
+
+def test_system_capabilities_and_audio_endpoints() -> None:
+    """Verify /api/v1/system/capabilities and /api/v1/audio/{kind}.wav."""
+    r_cap = client.get("/api/v1/system/capabilities")
+    assert r_cap.status_code == 200
+    cap_data = r_cap.json()
+    assert "yolo26_pose_available" in cap_data
+    assert cap_data["audio_synthesis_available"] is True
+
+    r_audio = client.get("/api/v1/audio/critical_siren.wav")
+    assert r_audio.status_code == 200
+    assert r_audio.headers["content-type"] == "audio/wav"
+    assert len(r_audio.content) > 1000
+
+
+def test_vision_step_include_frames() -> None:
+    """Verify /api/v1/vision/step returns base64 JPEGs when include_frames is True."""
+    resp = client.post(
+        "/api/v1/vision/step",
+        json={
+            "scenario": "NORMAL_LAP_AND_FAMILY",
+            "dt_sec": 0.0,
+            "reset": True,
+            "include_frames": True,
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "rendered_frames" in data
+    assert "silhouette_bgr" in data["rendered_frames"]
+    assert data["rendered_frames"]["silhouette_bgr"].startswith("data:image/jpeg;base64,")

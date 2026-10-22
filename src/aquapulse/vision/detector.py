@@ -589,3 +589,19 @@ class AquaPulseVisionDetector:
     ) -> tuple[np.ndarray, list[SwimmerTrack], list[DetectedObject]]:
         """Run deterministic scenario synthesis (or live YOLO26 tracking when frame stream provided)."""
         return synthesize_scenario_frame(scenario=scenario, elapsed_sec=elapsed_sec)
+
+    def create_video_tracker(
+        self,
+        calibration: Any,
+        role_overrides: dict[int, Any] | None = None,
+    ) -> Any:
+        """Create a RealFrameTracker instance with loaded YOLO models and calibration."""
+        from aquapulse.vision.video_tracker import RealFrameTracker
+
+        self.load_yolo26_if_available()
+        return RealFrameTracker(
+            calibration=calibration,
+            pose_model=self._pose_model,
+            detect_model=self._detect_model,
+            role_overrides=role_overrides,
+        )

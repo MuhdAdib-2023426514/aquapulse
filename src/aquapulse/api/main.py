@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
+import base64
 from pathlib import Path
 from typing import Any
 
+import cv2
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 from aquapulse.agent.reasoning import AgentReasoningLogger
 from aquapulse.agent.state_machine import AquaPulseStateMachine
 from aquapulse.agent.tools import PoolsideToolActuator
+from aquapulse.api.video_routes import router as video_router
 from aquapulse.config import DEFAULT_CONFIG, DEFAULT_DB_PATH, SYS1_MAX_LATENCY_MS
 from aquapulse.db.database import (
     fetch_30d_esg_summary,
@@ -50,6 +53,10 @@ class StepVisionRequest(BaseModel):
     )
     reset: bool = Field(default=False)
     privacy_mode: PrivacyMode = Field(default=PrivacyMode.SILHOUETTE)
+    include_frames: bool = Field(
+        default=False,
+        description="When True, encode rendered vision frames as base64 JPEGs for frontend preview",
+    )
 
 
 class AquaPulseRuntimeService:
@@ -225,6 +232,8 @@ app = FastAPI(
     ),
 )
 
+app.include_router(video_router)
+
 
 @app.get("/health")
 def health_check() -> dict[str, Any]:
@@ -252,7 +261,16 @@ def api_vision_step(req: StepVisionRequest) -> dict[str, Any]:
         reset=req.reset,
         privacy_mode=req.privacy_mode,
     )
-    return {k: v for k, v in snap.items() if k != "_frames"}
+    output = {k: v for k, v in snap.items() if k != "_frames"}
+    if req.include_frames and "_frames" in snap:
+        frames_dict = snap["_frames"]
+        encoded: dict[str, str] = {}
+        for key in ("silhouette_bgr", "raw_bgr", "water_annotated_bgr"):
+            if key in frames_dict and frames_dict[key] is not None:
+                _, buf = cv2.imencode(".jpg", frames_dict[key], [cv2.IMWRITE_JPEG_QUALITY, 80])
+                encoded[key] = f"data:image/jpeg;base64,{base64.b64encode(buf).decode('ascii')}"
+        output["rendered_frames"] = encoded
+    return output
 
 
 @app.get("/api/v1/agent/state")

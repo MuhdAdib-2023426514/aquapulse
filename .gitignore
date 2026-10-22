@@ -22,3 +22,11 @@ assets/models/*.pt
 repomix-output.xml
 repomix*
 
+# Uploads and temporary video artifacts
+assets/uploads/
+
+# Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+

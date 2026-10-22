@@ -12,6 +12,7 @@ from aquapulse.schemas import WaterClarityReport
 
 def inspect_water_clarity(
     frame: np.ndarray,
+    roi_polygon: np.ndarray | None = None,
 ) -> tuple[WaterClarityReport, np.ndarray]:
     """Analyze pool water basin ROI for turbidity, algae green-shift, and storm debris.
 
@@ -20,9 +21,17 @@ def inspect_water_clarity(
     annotated = frame.copy()
     h, w = frame.shape[:2]
 
-    # Pool basin ROI coordinates (matching 640x360 layout or scaled proportionally)
-    x1, y1 = int(w * 40 / 640), int(h * 60 / 360)
-    x2, y2 = int(w * 600 / 640), int(h * 300 / 360)
+    if roi_polygon is not None and len(roi_polygon) >= 3:
+        rx, ry, rw, rh = cv2.boundingRect(roi_polygon)
+        x1 = max(0, rx)
+        y1 = max(0, ry)
+        x2 = min(w, rx + rw)
+        y2 = min(h, ry + rh)
+    else:
+        # Pool basin ROI coordinates (matching 640x360 layout or scaled proportionally)
+        x1, y1 = int(w * 40 / 640), int(h * 60 / 360)
+        x2, y2 = int(w * 600 / 640), int(h * 300 / 360)
+
     water_roi = frame[y1:y2, x1:x2]
 
     if water_roi.size == 0:

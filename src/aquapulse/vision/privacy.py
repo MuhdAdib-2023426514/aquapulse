@@ -276,3 +276,42 @@ def render_tier2_silhouette_frame(
         )
 
     return canvas
+
+
+def mask_heads_full_res(
+    frame: np.ndarray,
+    head_boxes: list[tuple[int, int, int, int]],
+    margin: float = 0.35,
+    blur: bool = False,
+) -> np.ndarray:
+    """Mask head/face bounding boxes at full frame resolution for Tier-1 PDPA compliance.
+
+    When blur is False (default for Tier-1 security), heads are redacted in solid black.
+    When blur is True, heavy pixelation/Gaussian blur is applied.
+    """
+    output = frame.copy()
+    h, w = frame.shape[:2]
+
+    for x1, y1, x2, y2 in head_boxes:
+        bw, bh = x2 - x1, y2 - y1
+        if bw <= 0 or bh <= 0:
+            continue
+        pad_x = int(bw * margin)
+        pad_y = int(bh * margin)
+        rx1 = max(0, x1 - pad_x)
+        ry1 = max(0, y1 - pad_y)
+        rx2 = min(w, x2 + pad_x)
+        ry2 = min(h, y2 + pad_y)
+
+        if blur:
+            roi = output[ry1:ry2, rx1:rx2]
+            if roi.size > 0:
+                ksize = max(15, (min(rx2 - rx1, ry2 - ry1) // 2) * 2 + 1)
+                output[ry1:ry2, rx1:rx2] = cv2.GaussianBlur(roi, (ksize, ksize), 30)
+        else:
+            # Solid black oval for biometric identity redaction
+            center = ((rx1 + rx2) // 2, (ry1 + ry2) // 2)
+            axes = ((rx2 - rx1) // 2, (ry2 - ry1) // 2)
+            cv2.ellipse(output, center, axes, 0, 0, 360, (0, 0, 0), -1)
+
+    return output
