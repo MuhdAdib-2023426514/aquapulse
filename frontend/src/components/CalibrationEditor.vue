@@ -138,8 +138,8 @@ async function saveAndProcess() {
         <div class="ctrl-group">
           <label>Pitch Time Compression</label>
           <select v-model.number="timeScale">
-            <option :value="1.0">1x (Official AGENTS.md 10s/20s/15s)</option>
-            <option :value="2.0">2x Fast Demo (5s VERIFY / 10s CRITICAL / 7.5s Nudge)</option>
+            <option :value="1.0">1x (Official 5s VERIFY / 8s CRITICAL / 15s Nudge)</option>
+            <option :value="2.0">2x Fast Demo (2.5s VERIFY / 4s CRITICAL / 7.5s Nudge)</option>
           </select>
         </div>
 

@@ -79,6 +79,19 @@ export interface TrackTemporalState {
   agent_state: AgentState
 }
 
+export interface UnattendedObjectTrack {
+  object_id: string
+  label: string
+  bbox: [number, number, number, number]
+  pool_coords_m: [number, number]
+  zone: PoolZone
+  unattended_sec: number
+  associated_track_id: number | null
+  is_hazard: boolean
+  nudge_sent: boolean
+  ticket_dispatched: boolean
+}
+
 export interface System1ReflexTrace {
   execution_latency_ms: number
   within_latency_budget: boolean
@@ -86,6 +99,7 @@ export interface System1ReflexTrace {
   tracks_evaluated: number
   active_alerts: string[]
   track_states: TrackTemporalState[]
+  unattended_objects?: UnattendedObjectTrack[]
 }
 
 export interface System2InspectionResult {

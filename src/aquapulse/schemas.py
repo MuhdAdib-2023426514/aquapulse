@@ -113,6 +113,10 @@ class SwimmerTrack(BaseModel):
         description="True when toddler/infant is within 1.5m of Zone B deep-end boundary",
     )
     suspected_violation: ViolationType = Field(default=ViolationType.NONE)
+    detected_violations: list[ViolationType] = Field(
+        default_factory=list,
+        description="All suspected/verified rule violations active for this track",
+    )
 
 
 class DetectedObject(BaseModel):
@@ -124,6 +128,23 @@ class DetectedObject(BaseModel):
     confidence: float = Field(default=0.9, ge=0.0, le=1.0)
     bbox: tuple[int, int, int, int] = Field(..., description="(x1, y1, x2, y2) pixel bounding box")
     zone: PoolZone = Field(default=PoolZone.POOL_DECK)
+
+
+class UnattendedObjectTrack(BaseModel):
+    """Stationary poolside object (drink, food, vape) tracked over time on pool coping."""
+
+    object_id: str = Field(..., description="Unique ID for tracked stationary object")
+    label: str = Field(..., description="Object label (e.g., bottle, cup, bowl, vape)")
+    bbox: tuple[int, int, int, int] = Field(..., description="(x1, y1, x2, y2) bounding box")
+    pool_coords_m: tuple[float, float] = Field(
+        default=(0.0, 0.0), description="Physical coordinates (x_m, y_m)"
+    )
+    zone: PoolZone = Field(default=PoolZone.POOL_DECK)
+    unattended_sec: float = Field(default=0.0, ge=0.0)
+    associated_track_id: int | None = Field(default=None)
+    is_hazard: bool = Field(default=False)
+    nudge_sent: bool = Field(default=False)
+    ticket_dispatched: bool = Field(default=False)
 
 
 class TrackTemporalState(BaseModel):
@@ -143,6 +164,12 @@ class TrackTemporalState(BaseModel):
     system2_verified: bool = Field(default=False)
     nudge_count: int = Field(default=0, ge=0)
     agent_state: AgentState = Field(default=AgentState.NORMAL)
+    last_vlm_call_t: float = Field(
+        default=-999.0, description="Timestamp of last background VLM query"
+    )
+    vlm_in_flight: bool = Field(
+        default=False, description="True if a background VLM query is currently in flight"
+    )
 
 
 class System1ReflexTrace(BaseModel):
@@ -160,6 +187,41 @@ class System1ReflexTrace(BaseModel):
     tracks_evaluated: int = Field(default=0, ge=0)
     active_alerts: list[str] = Field(default_factory=list)
     track_states: list[TrackTemporalState] = Field(default_factory=list)
+    unattended_objects: list[UnattendedObjectTrack] = Field(default_factory=list)
+
+
+class GeminiVLMInspectionSchema(BaseModel):
+    """Structured JSON schema returned by Gemini VLM Agentic Vision Judge."""
+
+    verified_violation: bool = Field(
+        default=False,
+        description="True if the cropped ROI shows any pool rule violation",
+    )
+    primary_violation: ViolationType = Field(
+        default=ViolationType.NONE,
+        description="Primary rule violation detected in the ROI",
+    )
+    detected_violations: list[ViolationType] = Field(
+        default_factory=list,
+        description="All rule violations visible in the ROI (e.g. FOOD_DRINK_POOLSIDE, SMOKING_VAPING, COTTON_ATTIRE)",
+    )
+    wearing_cotton: bool = Field(
+        default=False,
+        description="True if the person is wearing a cotton t-shirt or street clothing instead of swimwear",
+    )
+    bringing_food_or_drink: bool = Field(
+        default=False,
+        description="True if food bowls, snacks, bottles, or drink cups are present poolside",
+    )
+    smoking_or_vaping: bool = Field(
+        default=False,
+        description="True if the person is holding a vape/e-cigarette/cigarette or exhaling vapor/smoke",
+    )
+    confidence: float = Field(default=0.95, ge=0.0, le=1.0)
+    reasoning_summary: str = Field(
+        default="",
+        description="Concise 1-2 sentence visual judgment explaining all detected violations.",
+    )
 
 
 class System2InspectionResult(BaseModel):
@@ -173,13 +235,17 @@ class System2InspectionResult(BaseModel):
     )
     verified_violation: bool = Field(default=False)
     violation_type: ViolationType = Field(default=ViolationType.NONE)
+    detected_violations: list[ViolationType] = Field(
+        default_factory=list,
+        description="All verified rule violations in this ROI crop",
+    )
     confidence: float = Field(default=0.92, ge=0.0, le=1.0)
     inspector_backend: Literal["opencv_heuristic", "gemini_3.8_flash"] = Field(
         default="opencv_heuristic"
     )
     vlm_used: bool = Field(
         default=False,
-        description="True when Gemini 3.8 Flash VLM was invoked on the Tier-1 face-masked ROI",
+        description="True when Gemini VLM was invoked on the Tier-1 face-masked ROI",
     )
     visual_tool_steps: list[str] = Field(
         default_factory=list,

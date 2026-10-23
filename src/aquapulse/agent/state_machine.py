@@ -11,6 +11,7 @@ from aquapulse.agent.tools import PoolsideToolActuator
 from aquapulse.config import DEFAULT_CONFIG, PoolConfig
 from aquapulse.schemas import (
     AgentState,
+    DetectedObject,
     PostureState,
     SwimmerRole,
     SwimmerTrack,
@@ -18,6 +19,7 @@ from aquapulse.schemas import (
     System2InspectionResult,
     ToolExecutionLog,
     TrackTemporalState,
+    UnattendedObjectTrack,
     ViolationType,
 )
 
@@ -72,17 +74,24 @@ class AquaPulseStateMachine:
         self._states: dict[int, TrackTemporalState] = {}
         self._verify_alerted: set[int] = set()
         self._critical_alerted: set[int] = set()
+        self._unattended_objects: dict[str, UnattendedObjectTrack] = {}
 
     @property
     def track_states(self) -> dict[int, TrackTemporalState]:
         """Return current per-track temporal states."""
         return self._states
 
+    @property
+    def unattended_objects(self) -> dict[str, UnattendedObjectTrack]:
+        """Return currently tracked stationary unattended poolside objects."""
+        return self._unattended_objects
+
     def reset(self) -> None:
         """Clear all per-track timers and alert flags."""
         self._states.clear()
         self._verify_alerted.clear()
         self._critical_alerted.clear()
+        self._unattended_objects.clear()
 
     @staticmethod
     def _is_track_in_distress(track: SwimmerTrack) -> tuple[bool, bool, bool]:
@@ -122,10 +131,10 @@ class AquaPulseStateMachine:
 
         Handles:
         1. Active Surface Distress / Flailing (`ACTIVE_FLAILING`) + Silent Submersion
-           (`HORIZONTAL_SUBMERGED`) with seamless timer continuity (`0s -> 10s VERIFY -> 20s CRITICAL`).
+           (`HORIZONTAL_SUBMERGED`) with seamless timer continuity (`0s -> 5s VERIFY -> 8s CRITICAL`).
         2. Unaccompanied Toddler near Zone B deep-end boundary (`1.5m` supervision check).
         3. Bystander proximity (`<= 1.5m`): immediately resets unaccompanied toddler timer to NORMAL,
-           and holds a submerged/flailing swimmer in `VERIFY` (suppressing the 20s siren while
+           and holds a submerged/flailing swimmer in `VERIFY` (suppressing the 8s siren while
            bystander assists) until posture recovers.
         """
         t0 = time.perf_counter()
@@ -176,7 +185,7 @@ class AquaPulseStateMachine:
 
                 if state.submersion_sec >= self.config.sys1_verify_sec:
                     if supervised:
-                        # Adult bystander is within 1.5m assisting: hold VERIFY and suppress 20s siren
+                        # Adult bystander is within 1.5m assisting: hold VERIFY and suppress 8s siren
                         state.agent_state = AgentState.VERIFY
                         if tid not in self._verify_alerted:
                             self._verify_alerted.add(tid)
@@ -337,21 +346,29 @@ class AquaPulseStateMachine:
             if state.agent_state in (AgentState.VERIFY, AgentState.CRITICAL_EMERGENCY):
                 continue
 
-            if track.suspected_violation == ViolationType.NONE:
-                if state.violation_sec > 0.0:
-                    state.violation_sec = 0.0
+            is_violating = (track.suspected_violation != ViolationType.NONE)
+            decay_rate = getattr(self.config, "leaky_bucket_decay_rate", 0.25)
+            max_cap = getattr(self.config, "leaky_bucket_max_cap_sec", 30.0)
+
+            if is_violating:
+                state.violation_type = track.suspected_violation
+                state.violation_sec = round(min(max_cap, state.violation_sec + dt_sec), 3)
+            else:
+                # Leaky Bucket decay: slow drainage prevents instant reset loophole
+                decay_amt = dt_sec * decay_rate
+                state.violation_sec = round(max(0.0, state.violation_sec - decay_amt), 3)
+                if state.violation_sec <= 0.0:
                     state.violation_type = ViolationType.NONE
                     state.system2_verified = False
                     state.nudge_count = 0
                     state.agent_state = AgentState.NORMAL
                 continue
 
-            state.violation_type = track.suspected_violation
-            state.violation_sec = round(state.violation_sec + dt_sec, 3)
-
             nudge_1_threshold = self.config.sys2_nudge_required_sec
-            nudge_2_threshold = self.config.sys2_nudge_required_sec * float(
-                self.config.sys2_guard_ticket_nudge_count
+            nudge_2_threshold = getattr(
+                self.config,
+                "sys2_guard_ticket_sec",
+                self.config.sys2_nudge_required_sec * float(self.config.sys2_guard_ticket_nudge_count),
             )
 
             if state.violation_sec >= nudge_1_threshold and state.nudge_count == 0:
@@ -398,10 +415,106 @@ class AquaPulseStateMachine:
 
         return inspections, tool_logs
 
+    def step_unattended_objects(
+        self,
+        objects: list[DetectedObject],
+        tracks: list[SwimmerTrack],
+        dt_sec: float,
+    ) -> tuple[list[UnattendedObjectTrack], list[ToolExecutionLog]]:
+        """Track stationary food, drink, and vape items on pool coping and escalate unattended hazards."""
+        HAZARD_LABELS = {"bottle", "cup", "bowl", "wine glass", "food_container", "vape"}
+        tool_logs: list[ToolExecutionLog] = []
+        active_ids: set[str] = set()
+
+        for obj in objects:
+            if obj.label.lower() not in HAZARD_LABELS:
+                continue
+
+            ox1, oy1, ox2, oy2 = obj.bbox
+            ocx = 0.5 * (ox1 + ox2)
+            ocy = 0.5 * (oy1 + oy2)
+
+            # Spatial ID based on rounded coordinates to handle slight tracking jitter
+            obj_key = f"{obj.label}_{int(round(ocx / 20.0)) * 20}_{int(round(ocy / 20.0)) * 20}"
+            active_ids.add(obj_key)
+
+            unatt_item = self._unattended_objects.get(obj_key)
+            if unatt_item is None:
+                unatt_item = UnattendedObjectTrack(
+                    object_id=obj_key,
+                    label=obj.label,
+                    bbox=obj.bbox,
+                    zone=obj.zone,
+                    unattended_sec=0.0,
+                )
+                self._unattended_objects[obj_key] = unatt_item
+            else:
+                unatt_item.bbox = obj.bbox
+                unatt_item.zone = obj.zone
+
+            # Check distance to nearest person in 640x360 canvas pixels
+            min_dist_px = 999.0
+            nearest_tid: int | None = None
+            for tr in tracks:
+                bx1, by1, bx2, by2 = tr.bbox
+                tcx = 0.5 * (bx1 + bx2)
+                tcy = 0.5 * (by1 + by2)
+                dist = math.hypot(ocx - tcx, ocy - tcy)
+                if dist < min_dist_px:
+                    min_dist_px = dist
+                    nearest_tid = tr.track_id
+
+            # If a person is within 70px (~1.2m), item is attended
+            if min_dist_px <= 70.0:
+                unatt_item.associated_track_id = nearest_tid
+                # Decay unattended timer when attended
+                unatt_item.unattended_sec = max(0.0, unatt_item.unattended_sec - dt_sec * 0.5)
+            else:
+                unatt_item.associated_track_id = None
+                unatt_item.unattended_sec = round(unatt_item.unattended_sec + dt_sec, 3)
+
+            # Escalation stages
+            hazard_thresh = getattr(self.config, "unattended_object_hazard_sec", 5.0)
+            nudge_thresh = getattr(self.config, "unattended_object_nudge_sec", 8.0)
+            ticket_thresh = getattr(self.config, "unattended_object_ticket_sec", 20.0)
+
+            if unatt_item.unattended_sec >= hazard_thresh:
+                unatt_item.is_hazard = True
+
+            if unatt_item.unattended_sec >= nudge_thresh and not unatt_item.nudge_sent:
+                unatt_item.nudge_sent = True
+                tool_logs.append(
+                    self.actuator.trigger_unattended_item_nudge(
+                        object_id=obj_key,
+                        zone=unatt_item.zone,
+                        label=unatt_item.label,
+                        duration_sec=unatt_item.unattended_sec,
+                    )
+                )
+
+            if unatt_item.unattended_sec >= ticket_thresh and not unatt_item.ticket_dispatched:
+                unatt_item.ticket_dispatched = True
+                tool_logs.append(
+                    self.actuator.dispatch_unattended_item_housekeeping_ticket(
+                        object_id=obj_key,
+                        zone=unatt_item.zone,
+                        label=unatt_item.label,
+                        duration_sec=unatt_item.unattended_sec,
+                    )
+                )
+
+        # Prune objects no longer detected
+        for old_key in list(self._unattended_objects.keys()):
+            if old_key not in active_ids:
+                del self._unattended_objects[old_key]
+
+        return list(self._unattended_objects.values()), tool_logs
+
     def step(
         self,
         tracks: list[SwimmerTrack],
         dt_sec: float,
+        objects: list[DetectedObject] | None = None,
         roi_verifier: ROIVerifierCallback | None = None,
     ) -> tuple[
         System1ReflexTrace,
@@ -414,6 +527,10 @@ class AquaPulseStateMachine:
         sys2_inspections, sys2_tools = self.step_system2_governance(
             tracks, dt_sec, roi_verifier=roi_verifier
         )
+        unattended_items, item_tools = self.step_unattended_objects(
+            objects or [], tracks, dt_sec
+        )
+        sys1_trace.unattended_objects = unattended_items
 
         # Recompute overall_state in sys1_trace to reflect any System 2 state changes/resets
         overall = AgentState.NORMAL
@@ -423,7 +540,7 @@ class AquaPulseStateMachine:
         sys1_trace.overall_state = overall
         sys1_trace.track_states = [st.model_copy(deep=True) for st in self._states.values()]
 
-        all_tools = sys1_tools + sys2_tools
+        all_tools = sys1_tools + sys2_tools + item_tools
         thoughts = self.reasoning_logger.record_tick(
             sys1_trace=sys1_trace,
             sys2_results=sys2_inspections,

@@ -49,7 +49,7 @@ class StepVisionRequest(BaseModel):
         default=None,
         ge=0.0,
         le=300.0,
-        description="Optional absolute elapsed timestamp to jump to (e.g., 0s, 10s, 15s, 20s, 30s)",
+        description="Optional absolute elapsed timestamp to jump to (e.g., 0s, 5s, 8s, 15s, 30s)",
     )
     reset: bool = Field(default=False)
     privacy_mode: PrivacyMode = Field(default=PrivacyMode.SILHOUETTE)
@@ -102,7 +102,7 @@ class AquaPulseRuntimeService:
             self.reset_simulation(scenario=scenario)
 
         if target_elapsed_sec is not None:
-            # Replay deterministically from 0s in 5s increments so 10s/15s/20s/30s transitions fire
+            # Replay deterministically from 0s so 5s/8s/15s/30s transitions fire
             self.reset_simulation(scenario=scenario)
             if target_elapsed_sec <= 0.0:
                 dt_steps = [0.0]
@@ -143,6 +143,7 @@ class AquaPulseRuntimeService:
             sys1_trace, step_sys2, step_tools, step_thoughts = self.state_machine.step(
                 tracks=tracks,
                 dt_sec=step_dt,
+                objects=objects,
                 roi_verifier=_verifier,
             )
             sys2_inspections.extend(step_sys2)

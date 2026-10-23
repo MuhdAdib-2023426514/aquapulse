@@ -20,8 +20,8 @@ Every module, endpoint, and UI component in this repository must directly reinfo
    - Solves the Malaysian strata condo reality where no lifeguards are on deck and guardhouse security takes 3–5 minutes to arrive.
    - **Stateful Agentic Escalation Loop**:
      - `NORMAL`: Active monitoring of swimmer poses, persistent `track_id`s, zones, and submersion timers.
-     - `VERIFY` ($t = 10\text{s}$ motionless/submerged OR unaccompanied infant/toddler within 1.5m of deep-end boundary): Checks whether an adult swimmer is within 1.5m interacting with the subject; activates yellow poolside caution beacon and pre-alerts security.
-     - `CRITICAL_EMERGENCY` ($t = 20\text{s}$ confirmed distress with no bystander response): Triggers an **on-site directional siren + TTS voice broadcast** (*"Emergency in Zone B Deep End! Swimmer submerged—nearby residents please assist immediately!"*) to mobilize bystanders within 5 seconds, while dispatching a live zone map and fastest entry route to the guard's smartphone.
+     - `VERIFY` ($t = 5\text{s}$ motionless/submerged OR unaccompanied infant/toddler within 1.5m of deep-end boundary): Checks whether an adult swimmer is within 1.5m interacting with the subject; activates yellow poolside caution beacon and pre-alerts security.
+     - `CRITICAL_EMERGENCY` ($t = 8\text{s}$ confirmed distress with no bystander response): Triggers an **on-site directional siren + TTS voice broadcast** (*"Emergency in Zone B Deep End! Swimmer submerged—nearby residents please assist immediately!"*) to mobilize bystanders within 5 seconds, while dispatching a live zone map and fastest entry route to the guard's smartphone.
 
 3. **Feasibility & Deliverability (20%) — Privacy-Preserving "Skeletal Silhouette Mode" + Polite Audio Nudges**
    - **100% Malaysia PDPA 2010 & PDPA (Amendment) Act 2024 Compliance**: Enforces a **Two-Tier Redaction Architecture** so biometric facial identity is never exposed to cloud APIs or stored on disk, rendering swimmers as **anonymized colored skeletal silhouettes** on a pool zone canvas for all saved logs and UI views.
@@ -48,7 +48,7 @@ Every module, endpoint, and UI component in this repository must directly reinfo
     - **Tier 1 Masking (For System 2 ROI Verification)**: Redact ONLY the head/face bounding box derived from nose/eye/ear keypoints (`kp[0..4]`) before passing the cropped torso/hand ROI to `agentic_inspector.py` (so cotton fabric texture, food containers, or smoke remain visually verifiable while facial biometric identity is never exposed to any VLM/API).
     - **Tier 2 Masking (For UI Display & Evidence Storage)**: Render full **Skeletal Silhouette Mode** (neon keypoints + limb vectors on a dark blueprint pool zone grid, zero raw skin/swimwear pixels) for all saved JMB logs and Guardhouse alerts.
   - **Deterministic Pitch Scenario Injector**: Interactive triggers controllable from Streamlit/FastAPI so live hackathon pitches can deterministically demonstrate:
-    1. *Silent Drowning Rescue Loop ($0\text{s} \to 10\text{s} \to 20\text{s}$)*
+    1. *Silent Drowning Rescue Loop ($0\text{s} \to 5\text{s} \to 8\text{s}$)*
     2. *Unaccompanied Toddler Near Deep End*
     3. *Cotton T-Shirt / Poolside Food & Smoking Polite Nudge*
     4. *Post-Monsoon Storm Debris & Algae Tint Drift*
@@ -56,7 +56,7 @@ Every module, endpoint, and UI component in this repository must directly reinfo
 - **Dual-Path Agentic Architecture: "System 1" (Fast Edge Reflex) vs. "System 2" (Deliberative Agentic Vision)**:
   - **⚡ Path 1 — "System 1" Fast Edge Reflex (`<30ms` Latency — Life Safety Critical Path)**:
     - **Used strictly for**: Silent Drowning / Submersion Tracking & Unaccompanied Toddler Near Deep End.
-    - **Zero Cloud / Zero VLM Latency in the Critical Loop**: Runs 100% locally and synchronously using NMS-free `yolo26n-pose.pt` keypoints + `<2ms` NumPy/OpenCV geometry + deterministic Python Temporal State Machine ($10.0\text{s}$ `VERIFY` bystander check $\to$ $20.0\text{s}$ `CRITICAL_EMERGENCY`).
+    - **Zero Cloud / Zero VLM Latency in the Critical Loop**: Runs 100% locally and synchronously using NMS-free `yolo26n-pose.pt` keypoints + `<2ms` NumPy/OpenCV geometry + deterministic Python Temporal State Machine ($5.0\text{s}$ `VERIFY` bystander check $\to$ $8.0\text{s}$ `CRITICAL_EMERGENCY`).
     - Fires local poolside strobe and **pre-cached directional emergency voice broadcast** in milliseconds—guaranteed to work even if condo Wi-Fi/internet is completely offline. Only *after* the emergency alarm is already triggered does an asynchronous task enrich the guardhouse incident log.
   - **🔍 Path 2 — "System 2" Deliberative Agentic Vision (`1–3s` Latency — Governance & Maintenance)**:
     - **Used strictly for**: Non-life-safety tasks where **high precision / zero false resident accusations** matter more than millisecond latency:
@@ -108,7 +108,7 @@ swimming_pool_monitoring_system/
 ├── src/
 │   └── aquapulse/
 │       ├── __init__.py
-│       ├── config.py                # Thresholds (10s/20s/15s), TNB tariffs (RM/kWh), turnover floor, zone polygons
+│       ├── config.py                # Thresholds (5s/8s/15s), TNB tariffs (RM/kWh), turnover floor, zone polygons
 │       ├── schemas.py               # Pydantic models for detections, track_id, System 1/2 traces, tool calls, ESG metrics
 │       ├── db/
 │       │   ├── __init__.py
@@ -136,7 +136,7 @@ swimming_pool_monitoring_system/
 │   └── streamlit_app.py             # 4-Tab Streamlit interactive prototype & pitch dashboard (using @st.fragment)
 ├── assets/                          # Generated demo frames, models/, synthetic pool videos, pre-cached TTS audio alerts
 └── tests/
-    ├── test_state_machine.py        # Verifies System 1 (<30ms 10s/20s rescue) & System 2 (15s ROI-verified nudge)
+    ├── test_state_machine.py        # Verifies System 1 (<30ms 5s/8s rescue) & System 2 (15s ROI-verified nudge)
     ├── test_esg_optimizer.py        # Verifies Contamination Score, Turnover Floor & Pump Affinity Law (P ~ N^3) math
     ├── test_vision_privacy.py       # Verifies Tier-1 face masking, Tier-2 silhouette anonymization & water inspector
     └── test_api.py                  # FastAPI TestClient integration tests for all endpoints
@@ -191,7 +191,7 @@ wsl bash -lc "cd /home/muhammad_adib/swimming_pool_monitoring_system && uv run s
 5. **Compliant VFD Pump Turnover Floor**:
    - `pump_optimizer.py` must enforce a minimum daily water turnover floor (`min_daily_turnovers: float = 3.5`) alongside the Pump Affinity Law ($P_2 / P_1 = (N_2 / N_1)^3$) so energy savings (~25–35%) never compromise baseline pool sanitation standards.
 6. **Smooth Streamlit Live Rendering**:
-   - Use `@st.fragment` in `app/streamlit_app.py` for the live Vision Canvas & Agentic State Log panel so ticking the simulation timer ($0\text{s} \to 10\text{s} \to 20\text{s}$) updates smoothly without triggering slow full-page reloads of the Plotly ESG and SQLite analytics tabs.
+   - Use `@st.fragment` in `app/streamlit_app.py` for the live Vision Canvas & Agentic State Log panel so ticking the simulation timer ($0\text{s} \to 5\text{s} \to 8\text{s}$) updates smoothly without triggering slow full-page reloads of the Plotly ESG and SQLite analytics tabs.
 7. **Malaysian Localization & Domain Realism**:
    - Use **RM (Malaysian Ringgit)** and realistic **TNB commercial/strata tariff rates** (e.g., `RM 0.51 / kWh`), Malaysian grid carbon factor (`0.758 kg CO2 / kWh`), and local township terminology (*JMB/MC, Guardhouse Auxiliary Police, Monsoon Storm Debris, PDPA 2010 & PDPA Amendment Act 2024*).
 8. **Clean, Typed, Modular Python**:

@@ -53,10 +53,10 @@ function seekToEvent(ev: TimelineEvent) {
 
     <!-- Legend -->
     <div class="markers-legend">
-      <span><i style="background:#B1782A"></i> Verify Beacon (10s)</span>
-      <span><i style="background:#A34E42"></i> Emergency Siren (20s)</span>
-      <span><i style="background:#176776"></i> Polite Nudge (15s)</span>
-      <span><i style="background:#B388FF"></i> Guard Ticket (30s)</span>
+      <span><i style="background:#B1782A"></i> Verify Beacon (5s)</span>
+      <span><i style="background:#A34E42"></i> Emergency Siren (8s)</span>
+      <span><i style="background:#176776"></i> Polite Nudge (5s)</span>
+      <span><i style="background:#B388FF"></i> Guard Ticket (8s)</span>
       <span><i style="background:#69F0AE"></i> Cleaner Ticket</span>
     </div>
   </div>

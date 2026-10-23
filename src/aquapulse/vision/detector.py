@@ -16,6 +16,7 @@ from aquapulse.config import (
     MODELS_DIR,
     POOL_LENGTH_M,
     POOL_WIDTH_M,
+    SYS1_VERIFY_SEC,
     TODDLER_DEEP_BOUNDARY_BUFFER_M,
     YOLO26_DETECT_MODEL_NAME,
     YOLO26_POSE_MODEL_NAME,
@@ -305,9 +306,9 @@ def synthesize_scenario_frame(
 
     elif scenario == ScenarioName.SILENT_DROWNING_RESCUE:
         # Swimmer #201 in Zone B Deep End:
-        # 0s <= elapsed_sec < 10s -> Active Surface Flailing (ACTIVE_FLAILING)
-        # elapsed_sec >= 10s -> Exhausted & motionless underwater (HORIZONTAL_SUBMERGED)
-        is_flail_phase = elapsed_sec < 10.0
+        # 0s <= elapsed_sec < 5s -> Active Surface Flailing (ACTIVE_FLAILING)
+        # elapsed_sec >= 5s -> Exhausted & motionless underwater (HORIZONTAL_SUBMERGED)
+        is_flail_phase = elapsed_sec < SYS1_VERIFY_SEC
         posture = (
             PostureState.ACTIVE_FLAILING if is_flail_phase else PostureState.HORIZONTAL_SUBMERGED
         )

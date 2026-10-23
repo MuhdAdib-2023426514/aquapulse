@@ -29,7 +29,7 @@ See [audit_rubric_and_ui.py](./scripts/audit_rubric_and_ui.py) for the implement
 When the `aquapulse_inspector` MCP server ([mcp_server.py](../../../src/aquapulse/mcp_server.py)) is active, invoke its 4 tools directly or via CLI one-liners:
 
 1. **`simulate_scenario_timeline(scenario, timestamps_csv)`**:
-   - Steps any `ScenarioName` through `0s, 10s, 15s, 20s, 30s` and prints `System1ReflexTrace`, `TrackTemporalState`s, `System2InspectionResult.visual_tool_steps`, and `ToolExecutionLog`s.
+   - Steps any `ScenarioName` through `0s, 5s, 8s, 15s, 30s` and prints `System1ReflexTrace`, `TrackTemporalState`s, `System2InspectionResult.visual_tool_steps`, and `ToolExecutionLog`s.
 2. **`render_and_verify_pdpa_frames(scenario, elapsed_sec)`**:
    - Exports PNGs into `assets/debug_frames/`:
      - `tier2_silhouette_<scenario>.png` (0% raw biometric pixels)

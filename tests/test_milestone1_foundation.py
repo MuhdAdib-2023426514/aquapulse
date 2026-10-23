@@ -47,10 +47,10 @@ def test_config_constants_and_zones() -> None:
     assert TNB_TARIFF_RM_PER_KWH == 0.51
     assert MY_GRID_KG_CO2_PER_KWH == 0.758
     assert MIN_DAILY_TURNOVERS == 3.5
-    assert SYS1_VERIFY_SEC == 10.0
-    assert SYS1_CRITICAL_EMERGENCY_SEC == 20.0
+    assert SYS1_VERIFY_SEC == 5.0
+    assert SYS1_CRITICAL_EMERGENCY_SEC == 8.0
     assert SYS1_MAX_LATENCY_MS == 30.0
-    assert SYS2_NUDGE_REQUIRED_SEC == 15.0
+    assert SYS2_NUDGE_REQUIRED_SEC == 5.0
     assert DEFAULT_CONFIG.pool_volume_m3 == 450.0
     assert set(ZONE_POLYGONS_PX.keys()) == {"ZONE_A_SHALLOW", "ZONE_B_DEEP_END", "POOL_DECK"}
 

@@ -14,7 +14,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (!(options.body instanceof FormData) && options.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
-  const response = await fetch(`${BASE_URL}${path}`, { ...options, headers })
+  const response = await fetch(`${BASE_URL}${path}`, {
+    cache: 'no-store',
+    ...options,
+    headers,
+  })
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({ detail: response.statusText }))
     throw new Error(errorBody.detail || `Request failed with status ${response.status}`)

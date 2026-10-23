@@ -102,6 +102,16 @@ export const useAquaStore = defineStore('aquapulse', {
     async refreshVideos() {
       try {
         this.videos = await api.listVideos()
+        if (this.activeJobId) {
+          try {
+            const freshJob = await api.getVideoJob(this.activeJobId)
+            const idx = this.videos.findIndex(v => v.id === this.activeJobId)
+            if (idx >= 0) this.videos[idx] = freshJob
+            if (freshJob.status === 'completed') {
+              await this.loadTimeline(this.activeJobId)
+            }
+          } catch {}
+        }
       } catch {}
     },
 
@@ -113,14 +123,19 @@ export const useAquaStore = defineStore('aquapulse', {
       this.error = null
 
       // Always refresh latest job info from server to ensure fresh status
+      let targetJob = this.videos.find(v => v.id === id) || null
       try {
         const freshJob = await api.getVideoJob(id)
         const idx = this.videos.findIndex(v => v.id === id)
-        if (idx >= 0) this.videos[idx] = freshJob
+        if (idx >= 0) {
+          this.videos[idx] = freshJob
+        } else {
+          this.videos.push(freshJob)
+        }
+        targetJob = freshJob
       } catch {}
 
-      const job = this.videos.find(v => v.id === id)
-      if (job?.status === 'completed') {
+      if (targetJob?.status === 'completed') {
         await this.loadTimeline(id)
       }
     },

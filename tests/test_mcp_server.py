@@ -39,7 +39,7 @@ def test_mcp_jsonrpc_initialize_and_tools_list() -> None:
 
 def test_mcp_tools_execution() -> None:
     """Verify all 4 AquaPulse MCP tools execute cleanly and validate domain invariants."""
-    sim_out = simulate_scenario_timeline("SILENT_DROWNING_RESCUE", "0,10,20")
+    sim_out = simulate_scenario_timeline("SILENT_DROWNING_RESCUE", "0,5,8")
     assert "VERIFY" in sim_out
     assert "CRITICAL_EMERGENCY" in sim_out
 

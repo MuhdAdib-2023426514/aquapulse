@@ -62,18 +62,32 @@ CONTAMINATION_W_ANIMAL: float = 5.0
 # ---------------------------------------------------------------------------
 # System 1 (Fast Edge Reflex <30ms) & System 2 (Deliberative Agentic Vision)
 # ---------------------------------------------------------------------------
-SYS1_VERIFY_SEC: float = 10.0  # t = 10s motionless/submerged OR unaccompanied toddler near deep end
-SYS1_CRITICAL_EMERGENCY_SEC: float = 20.0  # t = 20s confirmed distress -> siren + TTS + guard route
+SYS1_VERIFY_SEC: float = 5.0  # t = 5s motionless/submerged OR unaccompanied toddler near deep end
+SYS1_CRITICAL_EMERGENCY_SEC: float = 8.0  # t = 8s confirmed distress -> siren + TTS + guard route
 SYS1_SUPERVISION_RADIUS_M: float = 1.5  # Adult-to-toddler / bystander interaction radius (meters)
 SYS1_MAX_LATENCY_MS: float = 30.0  # Hard real-time local execution budget (<30ms)
 
 SYS2_NUDGE_REQUIRED_SEC: float = (
-    15.0  # >15s continuous rule violation -> System 2 ROI verify -> TTS nudge
+    5.0  # >5s continuous/cumulative rule violation -> System 2 ROI verify -> TTS nudge #1
+)
+SYS2_GUARD_TICKET_SEC: float = (
+    8.0  # >8s continuous/cumulative rule violation -> TTS nudge #2 + Guard Ticket
 )
 SYS2_GUARD_TICKET_NUDGE_COUNT: int = (
-    2  # Open JMB/Guard ticket only after 2 consecutive ignored nudges
+    2  # Open JMB/Guard ticket on 2nd consecutive nudge
 )
 SYS2_TIMEOUT_SEC: float = 2.0  # Strict timeout for optional Gemini Vision before OpenCV fallback
+
+# Leaky Bucket Cumulative Timer parameters (Decaying memory for sip-and-swim laps)
+LEAKY_BUCKET_DECAY_RATE: float = 0.25  # 0.25s decay per second of clean swimming
+LEAKY_BUCKET_MAX_CAP_SEC: float = 30.0  # Maximum accumulator cap (seconds)
+VLM_MIN_CALL_INTERVAL_SEC: float = 5.0  # Minimum interval between background VLM calls per track
+
+# Unattended Poolside Object Escalation
+UNATTENDED_OBJECT_HAZARD_SEC: float = 5.0   # 5s -> UI Hazard Badge
+UNATTENDED_OBJECT_NUDGE_SEC: float = 8.0    # 8s -> Polite Ambient Audio Nudge
+UNATTENDED_OBJECT_TICKET_SEC: float = 20.0  # 20s -> Automated Housekeeping / Cleaner Ticket
+UNATTENDED_OBJECT_COPING_DIST_M: float = 1.2  # Max distance to pool water coping to be deemed hazard
 
 # ---------------------------------------------------------------------------
 # Pool Zone Geometry (640 x 360 Reference Frame Canvas & Physical Meter Bounds)
@@ -115,8 +129,16 @@ class PoolConfig:
     sys1_supervision_radius_m: float = SYS1_SUPERVISION_RADIUS_M
     sys1_max_latency_ms: float = SYS1_MAX_LATENCY_MS
     sys2_nudge_required_sec: float = SYS2_NUDGE_REQUIRED_SEC
+    sys2_guard_ticket_sec: float = SYS2_GUARD_TICKET_SEC
     sys2_guard_ticket_nudge_count: int = SYS2_GUARD_TICKET_NUDGE_COUNT
     sys2_timeout_sec: float = SYS2_TIMEOUT_SEC
+    leaky_bucket_decay_rate: float = LEAKY_BUCKET_DECAY_RATE
+    leaky_bucket_max_cap_sec: float = LEAKY_BUCKET_MAX_CAP_SEC
+    vlm_min_call_interval_sec: float = VLM_MIN_CALL_INTERVAL_SEC
+    unattended_object_hazard_sec: float = UNATTENDED_OBJECT_HAZARD_SEC
+    unattended_object_nudge_sec: float = UNATTENDED_OBJECT_NUDGE_SEC
+    unattended_object_ticket_sec: float = UNATTENDED_OBJECT_TICKET_SEC
+    unattended_object_coping_dist_m: float = UNATTENDED_OBJECT_COPING_DIST_M
 
 
 DEFAULT_CONFIG = PoolConfig()

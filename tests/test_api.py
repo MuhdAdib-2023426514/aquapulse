@@ -20,65 +20,66 @@ def test_health_endpoint() -> None:
 
 
 def test_vision_step_system1_flailing_to_submersion_rescue() -> None:
-    """Verify /api/v1/vision/step progresses SILENT_DROWNING_RESCUE 0s -> 10s VERIFY -> 20s CRITICAL."""
-    # Jump to 10.0s -> VERIFY
-    r10 = client.post(
+    """Verify /api/v1/vision/step progresses SILENT_DROWNING_RESCUE 0s -> 5s VERIFY -> 8s CRITICAL."""
+    # Jump to 5.0s -> VERIFY
+    r5 = client.post(
         "/api/v1/vision/step",
         json={
             "scenario": "SILENT_DROWNING_RESCUE",
-            "target_elapsed_sec": 10.0,
+            "target_elapsed_sec": 5.0,
             "reset": True,
         },
     )
-    assert r10.status_code == 200
-    d10 = r10.json()
-    assert d10["elapsed_sec"] == 10.0
-    assert d10["system1_trace"]["within_latency_budget"] is True
-    assert d10["system1_trace"]["overall_state"] == "VERIFY"
+    assert r5.status_code == 200
+    d5 = r5.json()
+    assert d5["elapsed_sec"] == 5.0
+    assert d5["system1_trace"]["within_latency_budget"] is True
+    assert d5["system1_trace"]["overall_state"] == "VERIFY"
 
-    # Jump to 20.0s -> CRITICAL_EMERGENCY
-    r20 = client.post(
+    # Jump to 8.0s -> CRITICAL_EMERGENCY
+    r8 = client.post(
         "/api/v1/vision/step",
         json={
             "scenario": "SILENT_DROWNING_RESCUE",
-            "target_elapsed_sec": 20.0,
+            "target_elapsed_sec": 8.0,
             "reset": True,
         },
     )
-    assert r20.status_code == 200
-    d20 = r20.json()
-    assert d20["system1_trace"]["overall_state"] == "CRITICAL_EMERGENCY"
-    tool_names = [t["tool_name"] for t in d20["tool_logs"]]
+    assert r8.status_code == 200
+    d8 = r8.json()
+    assert d8["elapsed_sec"] == 8.0
+    assert d8["system1_trace"]["overall_state"] == "CRITICAL_EMERGENCY"
+    tool_names = [t["tool_name"] for t in d8["tool_logs"]]
     assert "trigger_emergency_siren_and_tts" in tool_names
 
 
 def test_vision_step_system2_cotton_and_food_governance() -> None:
-    """Verify /api/v1/vision/step progresses COTTON_TSHIRT_AND_FOOD_NUDGE to 15s Nudge and 30s Ticket."""
-    r15 = client.post(
+    """Verify /api/v1/vision/step progresses COTTON_TSHIRT_AND_FOOD_NUDGE to 5s Nudge and 8s Ticket."""
+    r5 = client.post(
         "/api/v1/vision/step",
         json={
             "scenario": "COTTON_TSHIRT_AND_FOOD_NUDGE",
-            "target_elapsed_sec": 15.0,
+            "target_elapsed_sec": 5.0,
             "reset": True,
         },
     )
-    assert r15.status_code == 200
-    d15 = r15.json()
-    assert d15["system1_trace"]["overall_state"] == "NUDGE_REQUIRED"
-    assert len(d15["system2_inspections"]) >= 1
-    assert all(ins["tier1_face_redacted"] is True for ins in d15["system2_inspections"])
+    assert r5.status_code == 200
+    d5 = r5.json()
+    assert d5["system1_trace"]["overall_state"] == "NUDGE_REQUIRED"
+    assert len(d5["system2_inspections"]) >= 1
+    assert all(ins["tier1_face_redacted"] is True for ins in d5["system2_inspections"])
 
-    r30 = client.post(
+    r8 = client.post(
         "/api/v1/vision/step",
         json={
             "scenario": "COTTON_TSHIRT_AND_FOOD_NUDGE",
-            "target_elapsed_sec": 30.0,
+            "target_elapsed_sec": 8.0,
             "reset": True,
         },
     )
-    assert r30.status_code == 200
-    d30 = r30.json()
-    assert d30["system1_trace"]["overall_state"] == "ESCALATED_GUARD_TICKET"
+    assert r8.status_code == 200
+    d8 = r8.json()
+    assert d8["system1_trace"]["overall_state"] == "ESCALATED_GUARD_TICKET"
 
 
 def test_agent_esg_water_and_resident_endpoints() -> None:
@@ -108,23 +109,23 @@ def test_agent_esg_water_and_resident_endpoints() -> None:
 
 
 def test_vision_step_pet_and_stray_animal_governance_and_purge() -> None:
-    """Verify PET_AND_STRAY_ANIMAL_POOL detects dog/cat, triggers Strata Nudge at 15s, and 100% VFD bio-purge."""
-    r15 = client.post(
+    """Verify PET_AND_STRAY_ANIMAL_POOL detects dog/cat, triggers Strata Nudge at 5s, and 100% VFD bio-purge."""
+    r5 = client.post(
         "/api/v1/vision/step",
         json={
             "scenario": "PET_AND_STRAY_ANIMAL_POOL",
-            "target_elapsed_sec": 15.0,
+            "target_elapsed_sec": 5.0,
             "reset": True,
         },
     )
-    assert r15.status_code == 200
-    d15 = r15.json()
-    detected_labels = {o["label"] for o in d15["detected_objects"]}
+    assert r5.status_code == 200
+    d5 = r5.json()
+    detected_labels = {o["label"] for o in d5["detected_objects"]}
     assert {"dog", "cat"}.issubset(detected_labels)
-    assert d15["system1_trace"]["overall_state"] == "NUDGE_REQUIRED"
-    assert d15["esg_metrics"]["animal_events"] == 2
-    assert d15["esg_metrics"]["recommended_vfd_speed_pct"] == 100.0
-    assert any("Haiwan peliharaan" in (t.get("audio_tts_text") or "") for t in d15["tool_logs"])
+    assert d5["system1_trace"]["overall_state"] == "NUDGE_REQUIRED"
+    assert d5["esg_metrics"]["animal_events"] == 2
+    assert d5["esg_metrics"]["recommended_vfd_speed_pct"] == 100.0
+    assert any("Haiwan peliharaan" in (t.get("audio_tts_text") or "") for t in d5["tool_logs"])
 
 
 def test_system_capabilities_and_audio_endpoints() -> None:

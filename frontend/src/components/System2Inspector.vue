@@ -30,9 +30,15 @@ function getCropUrl(relPath: string): string {
       <span class="sys2-sub">3-Step Deliberative Visual Tool Chain (0% Biometric Leakage)</span>
     </div>
 
+    <!-- Empty / Standby State -->
     <div v-if="!inspections.length && !Object.keys(roiImages).length" class="empty-sys2">
-      <p>No active System 2 ROI inspections at this timestamp.</p>
-      <small>When cotton attire, poolside drinks, or animals are suspected, System 2 executes face-masked ROI crop &amp; zoom inspection.</small>
+      <div class="standby-header">
+        <span class="standby-dot"></span>
+        <strong class="standby-title">System 2 Deliberative Inspector in Standby</strong>
+      </div>
+      <p class="standby-desc">
+        Life-safety reflexes (System 1) take priority. When non-emergency rule violations (cotton streetwear, poolside drinks, or stray pets) persist &gt;15s, System 2 engages automated face-masked ROI crop &amp; zoom inspection.
+      </p>
     </div>
 
     <!-- Active ROI Images & Visual Tool Steps -->
@@ -53,7 +59,7 @@ function getCropUrl(relPath: string): string {
 
         <div class="inspection-meta">
           <div class="meta-line">
-            <strong>Target: Track #{{ insp.track_id }} ({{ insp.target_type }})</strong>
+            <strong class="target-title">Target: Track #{{ insp.track_id }} ({{ insp.target_type }})</strong>
             <span class="backend-badge">{{ insp.inspector_backend }}</span>
           </div>
           <span class="verdict-chip" :class="{ verified: insp.verified_violation }">
@@ -79,56 +85,84 @@ function getCropUrl(relPath: string): string {
 
 <style scoped>
 .system2-card {
-  background: rgba(15, 26, 36, 0.85);
-  border: 1px solid rgba(51, 78, 104, 0.4);
+  background: rgba(13, 23, 33, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.3);
   border-radius: 10px;
-  padding: 1rem;
+  padding: 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
   backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .sys2-header {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  border-bottom: 1px solid rgba(51, 78, 104, 0.3);
+  padding-bottom: 0.5rem;
 }
 
 .sys2-header h4 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
+  font-weight: 700;
   color: #FFFFFF;
 }
 
 .sys2-sub {
-  font-size: 0.7rem;
-  color: #176776;
+  font-size: 0.72rem;
+  color: #38BDF8;
   font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
 }
 
 .empty-sys2 {
-  background: rgba(11, 22, 34, 0.5);
-  border: 1px dashed rgba(51, 78, 104, 0.4);
-  border-radius: 6px;
-  padding: 1rem;
-  font-size: 0.8rem;
-  color: #617981;
+  background: rgba(16, 28, 40, 0.75);
+  border: 1px dashed rgba(56, 189, 248, 0.35);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
-.empty-sys2 small {
-  font-size: 0.7rem;
-  color: #72858B;
+.standby-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.standby-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38BDF8;
+  box-shadow: 0 0 8px #38BDF8;
+}
+
+.standby-title {
+  font-size: 0.82rem;
+  color: #F1F5F9;
+  font-weight: 600;
+}
+
+.standby-desc {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 1.45;
 }
 
 .inspection-item {
-  background: rgba(11, 22, 34, 0.7);
-  border: 1px solid rgba(51, 78, 104, 0.4);
+  background: rgba(18, 32, 46, 0.9);
+  border: 1px solid rgba(51, 78, 104, 0.5);
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.65rem;
 }
 
 .inspection-top {
@@ -144,8 +178,8 @@ function getCropUrl(relPath: string): string {
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid rgba(0, 229, 255, 0.4);
-  background: #F5F8F9;
   flex-shrink: 0;
+  background: #0B141D;
 }
 
 .roi-thumbnail {
@@ -160,8 +194,9 @@ function getCropUrl(relPath: string): string {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  color: #72858B;
+  font-size: 0.7rem;
+  color: #64748B;
+  font-weight: 700;
 }
 
 .redaction-chip {
@@ -169,82 +204,94 @@ function getCropUrl(relPath: string): string {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 23, 68, 0.85);
-  color: #FFFFFF;
-  font-size: 0.55rem;
+  background: rgba(0, 0, 0, 0.85);
+  color: #38BDF8;
+  font-size: 0.58rem;
   text-align: center;
+  padding: 1px 0;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .inspection-meta {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
+  gap: 0.35rem;
 }
 
 .meta-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
+}
+
+.target-title {
+  font-size: 0.82rem;
   color: #FFFFFF;
+  font-weight: 700;
 }
 
 .backend-badge {
+  font-size: 0.65rem;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38BDF8;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  color: #397A68;
-  background: rgba(0, 255, 102, 0.15);
-  padding: 0.1rem 0.35rem;
-  border-radius: 3px;
 }
 
 .verdict-chip {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
-  color: #A56535;
-  background: rgba(255, 145, 0, 0.15);
-  padding: 0.15rem 0.4rem;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 4px;
-  width: fit-content;
-  font-weight: 600;
+  font-weight: 700;
+  background: rgba(148, 163, 184, 0.15);
+  color: #94A3B8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .verdict-chip.verified {
-  color: #A34E42;
-  background: rgba(255, 82, 82, 0.15);
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  border-color: #EF4444;
 }
 
 .reasoning-p {
-  font-size: 0.75rem;
-  color: #4B6269;
-  line-height: 1.35;
+  font-size: 0.74rem;
+  color: #CBD5E1;
   margin: 0;
+  line-height: 1.4;
 }
 
 .tool-chain {
-  background: rgba(8, 16, 24, 0.8);
-  border: 1px solid rgba(51, 78, 104, 0.3);
+  background: rgba(11, 20, 29, 0.85);
+  border: 1px solid rgba(51, 78, 104, 0.4);
   border-radius: 6px;
   padding: 0.5rem 0.65rem;
 }
 
 .chain-title {
   font-size: 0.68rem;
-  color: #617981;
-  text-transform: uppercase;
   font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .steps-list {
   margin: 0.25rem 0 0 1rem;
-  font-size: 0.72rem;
-  color: #176776;
+  padding: 0;
+  font-size: 0.7rem;
+  color: #38BDF8;
 }
 
 .steps-list code {
+  color: #E2E8F0;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
   font-family: 'JetBrains Mono', monospace;
 }
 </style>

@@ -117,7 +117,7 @@ describe('AquaPulse Store & Timeline Search', () => {
           within_latency_budget: true,
           overall_state: 'CRITICAL_EMERGENCY',
           tracks_evaluated: 1,
-          active_alerts: ['Submerged 10s confirmed'],
+          active_alerts: ['Submerged 8s confirmed'],
           track_states: [],
         },
         system2_inspections: [],

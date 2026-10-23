@@ -107,9 +107,9 @@ class PoolsideToolActuator:
         track_id: int,
         zone: PoolZone,
         reason: str,
-        duration_sec: float = 10.0,
+        duration_sec: float = 5.0,
     ) -> ToolExecutionLog:
-        """System 1 (10.0s VERIFY): Flash poolside yellow caution beacon & pre-alert security."""
+        """System 1 (5.0s VERIFY): Flash poolside yellow caution beacon & pre-alert security."""
         route = ZONE_ENTRY_ROUTES.get(zone, ZONE_ENTRY_ROUTES[PoolZone.ZONE_A_SHALLOW])
         log = ToolExecutionLog(
             tool_name="trigger_caution_beacon",
@@ -134,9 +134,9 @@ class PoolsideToolActuator:
         track_id: int,
         zone: PoolZone,
         reason: str,
-        duration_sec: float = 20.0,
+        duration_sec: float = 8.0,
     ) -> ToolExecutionLog:
-        """System 1 (20.0s CRITICAL_EMERGENCY): Fire directional siren, bilingual TTS & guard route."""
+        """System 1 (8.0s CRITICAL_EMERGENCY): Fire directional siren, bilingual TTS & guard route."""
         route = ZONE_ENTRY_ROUTES.get(zone, ZONE_ENTRY_ROUTES[PoolZone.ZONE_B_DEEP_END])
         tts_script = (
             f"EMERGENCY IN {zone.value}! {reason} — Nearby residents please assist immediately! "
@@ -302,5 +302,71 @@ class PoolsideToolActuator:
                 status="OPEN",
                 assigned_to="JMB Morning Pool Cleaning Crew",
                 notes=report.recommended_action,
+            )
+        return log
+
+    def trigger_unattended_item_nudge(
+        self,
+        *,
+        object_id: str,
+        zone: PoolZone,
+        label: str,
+        duration_sec: float,
+    ) -> ToolExecutionLog:
+        """System 2 (Unattended Object): Play ambient audio nudge for unattended items near pool coping."""
+        tts = (
+            f"Notice from Township Pool Management: Unattended {label} detected at the {zone.value} pool edge. "
+            f"For community safety and water hygiene, please place items at designated deck lounge tables. Thank you!"
+        )
+        log = ToolExecutionLog(
+            tool_name="trigger_unattended_item_nudge",
+            system_path="SYSTEM_2",
+            zone=zone,
+            track_id=None,
+            message=(
+                f"[UNATTENDED_OBJECT_NUDGE @ {duration_sec:.1f}s] Unattended {label} (ID: {object_id}) "
+                f"at {zone.value} pool coping for {duration_sec:.1f}s. Played ambient audio reminder."
+            ),
+            audio_tts_text=tts,
+            guard_route_hint=None,
+        )
+        self.execution_history.append(log)
+        return log
+
+    def dispatch_unattended_item_housekeeping_ticket(
+        self,
+        *,
+        object_id: str,
+        zone: PoolZone,
+        label: str,
+        duration_sec: float,
+    ) -> ToolExecutionLog:
+        """System 2 (Unattended Object >20s): Dispatch housekeeping ticket to clear hazardous items."""
+        route = ZONE_ENTRY_ROUTES.get(zone, ZONE_ENTRY_ROUTES[PoolZone.POOL_DECK])
+        log = ToolExecutionLog(
+            tool_name="dispatch_unattended_item_housekeeping_ticket",
+            system_path="SYSTEM_2",
+            zone=zone,
+            track_id=None,
+            message=(
+                f"[HOUSEKEEPING_TICKET @ {duration_sec:.1f}s] Unattended {label} (ID: {object_id}) "
+                f"uncollected at {zone.value} coping for {duration_sec:.1f}s. Dispatched housekeeping cleaner ticket."
+            ),
+            audio_tts_text=None,
+            guard_route_hint=route,
+        )
+        self.execution_history.append(log)
+        if self.db_conn is not None:
+            insert_maintenance_ticket(
+                self.db_conn,
+                timestamp=log.timestamp.isoformat(),
+                ticket_type="UNATTENDED_POOLSIDE_HAZARD",
+                severity="LOW",
+                turbidity_score=0.0,
+                algae_green_index=0.0,
+                debris_count=1,
+                status="OPEN",
+                assigned_to="JMB Pool Deck Housekeeping Crew",
+                notes=f"Clear unattended {label} from {zone.value} pool coping (ID: {object_id}).",
             )
         return log

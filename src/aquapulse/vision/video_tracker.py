@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from collections import deque
+from concurrent.futures import Future, ThreadPoolExecutor
 from typing import Any
 
 import numpy as np
@@ -22,6 +23,7 @@ from aquapulse.schemas import (
     SwimmerTrack,
     ViolationType,
 )
+from aquapulse.vision.agentic_inspector import verify_attire_or_item
 from aquapulse.vision.calibration import PoolCalibration
 from aquapulse.vision.detector import classify_pose_and_flailing
 
@@ -72,6 +74,12 @@ class RealFrameTracker:
         self._history: dict[int, deque[TrackHistoryItem]] = {}
         # Ghost tracks for swimmers who submerged and dropped detection
         self._ghosts: dict[int, GhostSwimmer] = {}
+        # Temporal latch of recently observed rule violations per track_id: {track_id: {ViolationType: last_seen_t}}
+        self._violation_latch: dict[int, dict[ViolationType, float]] = {}
+        # Asynchronous background VLM worker pool for non-blocking Gemini queries
+        self._vlm_pool: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=2)
+        self._vlm_futures: dict[int, Future[Any]] = {}
+        self._last_vlm_dispatch_t: dict[int, float] = {}
         # Next ID for unassigned tracks
         self._next_fallback_id = 101
 
@@ -223,12 +231,23 @@ class RealFrameTracker:
                         displacement_m = math.hypot(x_m - old_item.x_m, y_m - old_item.y_m)
                         velocity_mps = displacement_m / dt
 
-                    # Posture classification
-                    posture, is_flailing, is_submerged = classify_pose_and_flailing(
-                        kps_scaled,
-                        displacement_m=displacement_m,
-                        underwater_cue=in_water and (len(head_orig_pts) == 0),
-                    )
+                    # Posture classification (only classify drowning/flailing if person is in water)
+                    if in_water:
+                        posture, is_flailing, is_submerged = classify_pose_and_flailing(
+                            kps_scaled,
+                            displacement_m=displacement_m,
+                            underwater_cue=len(head_orig_pts) == 0,
+                        )
+                    else:
+                        bw_c = max(1, canvas_bbox[2] - canvas_bbox[0])
+                        bh_c = max(1, canvas_bbox[3] - canvas_bbox[1])
+                        posture = (
+                            PostureState.DECK_LOUNGING
+                            if bh_c <= bw_c * 1.45
+                            else PostureState.DECK_STANDING
+                        )
+                        is_flailing = False
+                        is_submerged = False
 
                     # Role classification (Toddler heuristic vs Lap Swimmer vs Adult)
                     role = SwimmerRole.ADULT
@@ -359,21 +378,69 @@ class RealFrameTracker:
                                 zone=ozon,
                             )
                         )
-
-                        # Flag violations on nearby tracks
-                        if label in COCO_FOOD_CLASSES.values():
-                            for tr in tracks:
-                                if tr.bbox:
-                                    dist_px = math.hypot(
-                                        c_obbox[0] - tr.bbox[0], c_obbox[1] - tr.bbox[1]
-                                    )
-                                    if dist_px <= 75.0:
-                                        tr.suspected_violation = ViolationType.FOOD_DRINK_POOLSIDE
-                        elif label in ("dog", "cat"):
-                            # Animal violation
-                            for tr in tracks:
-                                tr.suspected_violation = ViolationType.PET_OR_STRAY_ANIMAL
             except Exception:
                 pass
+
+        # 4. Asynchronous Background VLM Results Polling (Non-Blocking)
+        for tid, fut in list(self._vlm_futures.items()):
+            if fut.done():
+                try:
+                    insp_res, _ = fut.result()
+                    latch = self._violation_latch.setdefault(tid, {})
+                    for vtype in insp_res.detected_violations:
+                        if vtype != ViolationType.NONE:
+                            latch[vtype] = timestamp_sec
+                except Exception:
+                    pass
+                del self._vlm_futures[tid]
+
+        # 5. Multi-Violation Sub-ROI & Context Inspection (Cotton Shirt, Food/Drink, Vaping/Smoking, Pets)
+        has_pixels = bool(np.any(frame > 15))
+        for tr in tracks:
+            if tr.is_submerged and not tr.keypoints:
+                continue  # skip submerged ghost tracks
+            latch = self._violation_latch.setdefault(tr.track_id, {})
+            if has_pixels:
+                # Local fast heuristic runs in <2ms synchronously
+                insp_res, _ = verify_attire_or_item(
+                    frame, tr, objects, allow_vlm=False
+                )
+                for vtype in insp_res.detected_violations:
+                    if vtype != ViolationType.NONE:
+                        latch[vtype] = timestamp_sec
+
+                # Trigger Async VLM Judge (Gemini 3.8 Flash) in non-blocking background pool
+                # Triggered when a track is lounging/coping or heuristic flags a violation, throttled to >=5.0s
+                last_call = self._last_vlm_dispatch_t.get(tr.track_id, -999.0)
+                if (
+                    tr.track_id not in self._vlm_futures
+                    and (timestamp_sec - last_call) >= 5.0
+                    and (
+                        tr.posture == PostureState.DECK_LOUNGING
+                        or insp_res.detected_violations
+                        or objects
+                    )
+                ):
+                    self._last_vlm_dispatch_t[tr.track_id] = timestamp_sec
+                    frame_copy = frame.copy()
+                    tr_copy = tr.model_copy(deep=True)
+                    objs_copy = [o.model_copy(deep=True) for o in objects]
+                    self._vlm_futures[tr.track_id] = self._vlm_pool.submit(
+                        verify_attire_or_item,
+                        frame_copy,
+                        tr_copy,
+                        objs_copy,
+                        allow_vlm=True,
+                    )
+
+            # Keep violations active if seen within the last 5.0 seconds (prevents 1-frame detector flicker)
+            active_vtypes = [
+                vt
+                for vt, last_t in list(latch.items())
+                if (timestamp_sec - last_t) <= 5.0
+            ]
+            if active_vtypes:
+                tr.detected_violations = active_vtypes
+                tr.suspected_violation = active_vtypes[0]
 
         return tracks, objects, head_boxes_full_res

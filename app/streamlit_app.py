@@ -50,7 +50,7 @@ st.set_page_config(
 
 SCENARIO_LABELS: dict[ScenarioName, str] = {
     ScenarioName.SILENT_DROWNING_RESCUE: (
-        "1. 🚨 Silent Drowning Rescue (0s Flailing -> 10s VERIFY -> 20s CRITICAL Siren)"
+        "1. 🚨 Silent Drowning Rescue (0s Flailing -> 5s VERIFY -> 8s CRITICAL Siren)"
     ),
     ScenarioName.UNACCOMPANIED_TODDLER_DEEP_END: (
         "2. 👶 Unaccompanied Toddler Near Deep End (1.5m Supervision Radius)"
@@ -143,12 +143,12 @@ def render_tab1_command_center() -> None:
         target_jump = 0.0
     if btn_cols[1].button("⏩ Step +5s", use_container_width=True, type="primary"):
         step_dt = 5.0
-    if btn_cols[2].button("🟡 10s (VERIFY)", use_container_width=True):
-        target_jump = 10.0
-    if btn_cols[3].button("🔊 15s (Sys2 Nudge #1)", use_container_width=True):
+    if btn_cols[2].button("🟡 5s (VERIFY)", use_container_width=True):
+        target_jump = 5.0
+    if btn_cols[3].button("🚨 8s (CRITICAL)", use_container_width=True):
+        target_jump = 8.0
+    if btn_cols[4].button("🔊 15s (Sys2 Nudge #1)", use_container_width=True):
         target_jump = 15.0
-    if btn_cols[4].button("🚨 20s (CRITICAL)", use_container_width=True):
-        target_jump = 20.0
     if btn_cols[5].button("👮 30s (Guard Ticket)", use_container_width=True):
         target_jump = 30.0
 
@@ -360,7 +360,7 @@ def render_tab1_command_center() -> None:
             )
         else:
             st.caption(
-                "Step the simulation (+5s or 10s/15s/20s buttons) to record reasoning traces."
+                "Step the simulation (+5s or 5s/8s/15s buttons) to record reasoning traces."
             )
 
 
@@ -735,7 +735,7 @@ def main() -> None:
         st.divider()
         st.markdown(
             "**Dual-Path Agentic Architecture**:\n"
-            "- ⚡ **System 1 (`<30ms` Edge Reflex)**: Active Flailing + Silent Submersion (`10s VERIFY -> 20s CRITICAL Siren/TTS`) & `1.5m` Toddler Supervision.\n"
+            "- ⚡ **System 1 (`<30ms` Edge Reflex)**: Active Flailing + Silent Submersion (`5s VERIFY -> 8s CRITICAL Siren/TTS`) & `1.5m` Toddler Supervision.\n"
             "- 🔍 **System 2 (`1–3s` Agentic ROI)**: Tier-1 Face-Masked (`kp[0..4]`) 2× ROI Zoom for Cotton Attire & Poolside Food/Drink Nudges.\n"
             "- 🛡️ **Two-Tier Malaysia PDPA Shield**: 0% facial biometrics exposed; full Skeletal Silhouette Mode.\n"
             "- 🌱 **Planet Track VFD Eco-Drive**: Pump Affinity Law ($P \\propto N^3$) + `>= 3.5` Daily Turnover Floor."

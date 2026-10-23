@@ -139,7 +139,7 @@ class VideoPipeline:
             step_interval = max(1, int(round(fps / job.sample_fps)))
             effective_sample_fps = fps / step_interval
 
-            # Compressed thresholds if pitch time_scale > 1.0 (e.g., 2x makes 10s -> 5s)
+            # Compressed thresholds if pitch time_scale > 1.0 (e.g., 2x makes 5s -> 2.5s)
             scaled_config = dataclasses.replace(
                 DEFAULT_CONFIG,
                 sys1_verify_sec=round(DEFAULT_CONFIG.sys1_verify_sec / job.time_scale, 2),
@@ -249,6 +249,7 @@ class VideoPipeline:
                     sys1_trace, sys2_insps, tool_logs, thoughts = state_machine.step(
                         tracks=tracks,
                         dt_sec=1.0 / effective_sample_fps,
+                        objects=objects,
                         roi_verifier=_verifier,
                     )
                     sys1_latencies.append(sys1_trace.execution_latency_ms)

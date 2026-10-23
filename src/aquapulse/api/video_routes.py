@@ -181,8 +181,11 @@ def reevaluate_video(job_id: str) -> dict[str, Any]:
 
 
 @router.get("/videos/{job_id}/timeline")
-def get_video_timeline(job_id: str) -> dict[str, Any]:
+def get_video_timeline(job_id: str, response: Response) -> dict[str, Any]:
     """Fetch complete playhead-synced telemetry, events, and metrics."""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     job = _JOBS.get(job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Video job not found.")

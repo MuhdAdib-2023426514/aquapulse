@@ -78,8 +78,8 @@ flowchart TD
     Det --> Tier1["🛡️ PDPA Tier-1 Face Mask (kp[0..4] = [0,0,0])\n+ 2x Bicubic ROI Crop & Zoom"]
     Det --> Tier2["🛡️ PDPA Tier-2 Skeletal Silhouette Renderer\n(0% Raw Biometric Pixels on Dark Blueprint)"]
     
-    Sys1 -->|t = 10s VERIFY| Beacon["🟡 Poolside Caution Strobe + Guard Pre-Alert\n(Hold/Cancel if Bystander <= 1.5m)"]
-    Sys1 -->|t = 20s CRITICAL| Siren["🚨 Directional Siren + Bilingual EN/BM TTS\n+ Guard Smartphone Fastest Entry Route"]
+    Sys1 -->|t = 5s VERIFY| Beacon["🟡 Poolside Caution Strobe + Guard Pre-Alert\n(Hold/Cancel if Bystander <= 1.5m)"]
+    Sys1 -->|t = 8s CRITICAL| Siren["🚨 Directional Siren + Bilingual EN/BM TTS\n+ Guard Smartphone Fastest Entry Route"]
     
     Tier1 -->|t >= 15s Violation| Sys2["🔍 Path 2: System 2 Agentic ROI Inspector\nTorso HSV/Laplacian + Wrist Proximity + Gemini 3.8 Flash"]
     Sys2 -->|Strike 1 (15s)| Nudge1["🔊 Polite Directional Speaker Nudge #1"]
@@ -94,7 +94,7 @@ flowchart TD
 
 #### 1. People Track Execution (Life Safety, PDPA Privacy, Harmony & Inclusivity)
 * **Persistent Multi-Swimmer Pose & Distress Continuity ([`detector.py`](file:///home/muhammad_adib/swimming_pool_monitoring_system/src/aquapulse/vision/detector.py) & [`state_machine.py`](file:///home/muhammad_adib/swimming_pool_monitoring_system/src/aquapulse/agent/state_machine.py))**:
-  Each person is tracked across frames via a persistent `track_id` mapped to physical pool coordinates (`25m × 12m`). [`classify_pose_and_flailing`](file:///home/muhammad_adib/swimming_pool_monitoring_system/src/aquapulse/vision/detector.py#L139-L173) evaluates 17 COCO keypoints: when a swimmer exhibits vertical torso orientation (`torso_dy >= torso_dx`), wrists raised near/above the shoulder line (`wr_y <= sh_y - 4.0`), and near-zero forward progress (`displacement_m <= 0.15`), it flags `ACTIVE_FLAILING`. When they exhaust and sink (`HORIZONTAL_SUBMERGED`), `state_machine.py` **preserves `submersion_sec` continuously** (`0s -> 10s VERIFY -> 20s CRITICAL_EMERGENCY`) rather than resetting the timer.
+  Each person is tracked across frames via a persistent `track_id` mapped to physical pool coordinates (`25m × 12m`). [`classify_pose_and_flailing`](file:///home/muhammad_adib/swimming_pool_monitoring_system/src/aquapulse/vision/detector.py#L139-L173) evaluates 17 COCO keypoints: when a swimmer exhibits vertical torso orientation (`torso_dy >= torso_dx`), wrists raised near/above the shoulder line (`wr_y <= sh_y - 4.0`), and near-zero forward progress (`displacement_m <= 0.15`), it flags `ACTIVE_FLAILING`. When they exhaust and sink (`HORIZONTAL_SUBMERGED`), `state_machine.py` **preserves `submersion_sec` continuously** (`0s -> 5s VERIFY -> 8s CRITICAL_EMERGENCY`) rather than resetting the timer.
 * **3-Step Agentic ROI Governance ([`agentic_inspector.py`](file:///home/muhammad_adib/swimming_pool_monitoring_system/src/aquapulse/vision/agentic_inspector.py))**:
   When a swimmer enters the pool in a cotton t-shirt or brings food/drinks/pets to the deck for $\ge 15.0\text{s}$:
   1. `crop_and_zoom_roi` zeroes out the head bounding box (`kp[0..4]`), verifies `np.max(head_pixels) == 0`, and performs a $2\times$ bicubic zoom on the torso/hands.

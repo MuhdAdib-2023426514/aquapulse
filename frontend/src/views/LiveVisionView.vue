@@ -98,7 +98,7 @@ function onCloseCalibration() {
         <GuardPhoneCard />
         <VideoLibrary @calibrate="onOpenCalibration" />
         <details class="data-details">
-          <summary>Experimental analysis details</summary>
+          <summary>Perception & Escalation Telemetry (System 1 & 2)</summary>
           <ReflexTimers />
           <System2Inspector />
           <ReasoningLog />

@@ -51,10 +51,10 @@ wsl bash -lc 'cd /home/muhammad_adib/swimming_pool_monitoring_system && /home/mu
 
 1. **Minute 0:00–1:00 — Tab 1: System 1 (`<30ms`) Active Flailing $\to$ Silent Drowning Rescue & Two-Tier PDPA Shield**
    - Show the **Tier-2 Skeletal Silhouette Canvas** (`0%` raw biometric pixels stored or displayed).
-   - Select **Scenario #1 (`Silent Drowning Rescue`)**: at `0s–9s`, point out Swimmer `#201` in `ACTIVE_FLAILING` (surface panic oscillation). Click **`🟡 10s (VERIFY)`** to show the seamless transition into underwater submersion (`VERIFY` state + yellow poolside strobe). Click **`🚨 20s (CRITICAL)`** to fire the offline WAV siren, bilingual English/BM TTS broadcast, and Guardhouse Smartphone Route Card—all in `<1ms` (`<30ms` budget).
-2. **Minute 1:00–1:45 — Tab 1: System 2 (`>15s`) 3-Step Agentic Vision Tool Chain & Polite Audio Nudge**
-   - Select **Scenario #3 (`Cotton T-Shirt & Food Nudge`)** and click **`🔊 15s (Sys2 Nudge #1)`**.
-   - Show the **Tier-1 Face-Masked 2× ROI Zoom** and the **`🛠️ Track #ID Agentic Tool Trace (3 Steps)`** checklist on the right panel: Step 1 blacks out head keypoints `kp[0..4] = [0,0,0]` and crops `2x`, Step 2 probes torso polygon (`kp[5,6,11,12]`) HSV/Laplacian fabric texture and wrist (`kp[9,10]`) proximity to food/drinks, and Step 3 issues the VLM/OpenCV consensus verdict. Click **`👮 30s (Guard Ticket)`** to demonstrate 2-strike escalation.
+   - Select **Scenario #1 (`Silent Drowning Rescue`)**: at `0s–4s`, point out Swimmer `#201` in `ACTIVE_FLAILING` (surface panic oscillation). Click **`🟡 5s (VERIFY)`** to show the seamless transition into underwater submersion (`VERIFY` state + yellow poolside strobe). Click **`🚨 8s (CRITICAL)`** to fire the offline WAV siren, bilingual English/BM TTS broadcast, and Guardhouse Smartphone Route Card—all in `<1ms` (`<30ms` budget).
+2. **Minute 1:00–1:45 — Tab 1: System 2 (`>=5s`) 3-Step Agentic Vision Tool Chain & Polite Audio Nudge**
+   - Select **Scenario #3 (`Cotton T-Shirt & Food Nudge`)** and click **`🔊 5s (Sys2 Nudge #1)`**.
+   - Show the **Tier-1 Face-Masked 2× ROI Zoom** and the **`🛠️ Track #ID Agentic Tool Trace (3 Steps)`** checklist on the right panel: Step 1 blacks out head keypoints `kp[0..4] = [0,0,0]` and crops `2x`, Step 2 probes torso polygon (`kp[5,6,11,12]`) HSV/Laplacian fabric texture and wrist (`kp[9,10]`) proximity to food/drinks, and Step 3 issues the VLM/OpenCV consensus verdict. Click **`👮 8s (Guard Ticket)`** to demonstrate 2-strike escalation.
 3. **Minute 1:45–2:30 — Tab 2: Planet Track VFD Pump Eco-Drive & Township Scale Multiplier**
    - Open **Tab 2** to show the cubic **Pump Affinity Law Curve ($P \propto N^3$)** (`0.352 kW` at `40%` speed vs. `5.5 kW` fixed), the **Minimum Daily Turnover Compliance Badge (`>= 3.5 turnovers/day`)**, and slide the **Sime Darby Township Scale Multiplier** to `10–25` strata developments.
 4. **Minute 2:30–3:00 — Tab 3 & Tab 4: Monsoon Debris Inspector & Resident Township App Widget**

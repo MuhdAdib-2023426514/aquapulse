@@ -2,7 +2,7 @@
 
 Exposes Model Context Protocol (MCP) tools over stdio (JSON-RPC 2.0) to inspect,
 simulate, benchmark, and verify the AquaPulse swimming pool monitoring system:
-1. `simulate_scenario_timeline`: Step any scenario across timestamps (0s, 10s, 15s, 20s, 30s)
+1. `simulate_scenario_timeline`: Step any scenario across timestamps (0s, 5s, 8s, 15s, 30s)
    and inspect System 1 (<30ms) & System 2 (3-step ROI) state transitions.
 2. `render_and_verify_pdpa_frames`: Export Tier-1 Face-Masked 2x ROI crops, Tier-2 Skeletal
    Silhouettes, and Water QA overlays to `assets/debug_frames/` and verify PDPA invariants.
@@ -45,7 +45,7 @@ DEBUG_FRAMES_DIR: Path = ASSETS_DIR / "debug_frames"
 
 def simulate_scenario_timeline(
     scenario: str = "SILENT_DROWNING_RESCUE",
-    timestamps_csv: str = "0,10,15,20,30",
+    timestamps_csv: str = "0,5,8,15,30",
 ) -> str:
     """Step an AquaPulse scenario across comma-separated timestamps (seconds) and report System 1/2 traces."""
     try:
@@ -271,7 +271,7 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
         "name": "simulate_scenario_timeline",
         "description": (
-            "Step an AquaPulse pitch scenario across comma-separated timestamps (e.g. '0,10,15,20,30') "
+            "Step an AquaPulse pitch scenario across comma-separated timestamps (e.g. '0,5,8,15,30') "
             "and inspect System 1 (<30ms) reflex states, System 2 3-step ROI traces, ESG metrics, and tool logs."
         ),
         "inputSchema": {

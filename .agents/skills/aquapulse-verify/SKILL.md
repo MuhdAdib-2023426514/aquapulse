@@ -49,7 +49,7 @@ wsl bash -lc "cd /home/muhammad_adib/swimming_pool_monitoring_system && uv run p
 ```
 Verify that the test suite covers and passes these hackathon-critical invariants:
 1. **System 1 Fast Edge Reflex (`<30ms` Latency Budget & Persistent `track_id`)**:
-   - Per-`track_id` state machine transition (`NORMAL` $\to$ `VERIFY` at $t = 10.0\text{s}$ $\to$ `CRITICAL_EMERGENCY` at $t = 20.0\text{s}$) and $1.5\text{m}$ pairwise adult-to-infant proximity check execute synchronously in `< 30ms` locally with zero network/LLM calls.
+   - Per-`track_id` state machine transition (`NORMAL` $\to$ `VERIFY` at $t = 5.0\text{s}$ $\to$ `CRITICAL_EMERGENCY` at $t = 8.0\text{s}$) and $1.5\text{m}$ pairwise adult-to-infant proximity check execute synchronously in `< 30ms` locally with zero network/LLM calls.
 2. **System 2 Deliberative Agentic Vision (`>15s` Governance & Water QA)**:
    - Non-blocking ROI crop/zoom (`crop_and_zoom_roi`) applies **Tier 1 Face Redaction (`kp[0..4]`)** before verifying cotton streetwear, poolside food/drinks, or smoking (with strict `2.0s` timeout and deterministic OpenCV fallback), and only escalates to a guard ticket after 2 ignored polite speaker nudges.
 3. **Two-Tier PDPA 2010 & PDPA (Amendment) Act 2024 Privacy Shield**:

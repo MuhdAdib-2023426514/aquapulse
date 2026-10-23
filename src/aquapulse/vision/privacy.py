@@ -45,14 +45,20 @@ def compute_head_bbox(
 ) -> tuple[int, int, int, int]:
     """Compute an expanded `(x1, y1, x2, y2)` head/face bounding box from `kp[0..4]`."""
     h, w = frame_shape[:2]
-    bx1, by1, bx2, by2 = track.bbox
+    sx = w / float(CANVAS_WIDTH_PX)
+    sy = h / float(CANVAS_HEIGHT_PX)
+
+    bx1 = int(round(track.bbox[0] * sx))
+    by1 = int(round(track.bbox[1] * sy))
+    bx2 = int(round(track.bbox[2] * sx))
+    by2 = int(round(track.bbox[3] * sy))
     bw = max(12, bx2 - bx1)
     bh = max(16, by2 - by1)
 
     head_kps = [kp for kp in track.keypoints[:5] if kp.conf > 0.2]
     if head_kps:
-        xs = [kp.x for kp in head_kps]
-        ys = [kp.y for kp in head_kps]
+        xs = [kp.x * sx for kp in head_kps]
+        ys = [kp.y * sy for kp in head_kps]
         pad_x = max(12, int(bw * 0.28))
         pad_y = max(12, int(bh * 0.18))
         hx1 = max(0, int(min(xs)) - pad_x)
