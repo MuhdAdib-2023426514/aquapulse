@@ -7,6 +7,7 @@ agentic monitoring thresholds.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -14,17 +15,42 @@ from pathlib import Path
 try:
     from dotenv import load_dotenv
 
-    _env_file = Path(__file__).resolve().parents[2] / ".env"
-    if _env_file.exists():
-        load_dotenv(_env_file)
+    _candidates_env = [
+        Path(os.environ.get("AQUAPULSE_PROJECT_ROOT", "")) / ".env",
+        Path.cwd() / ".env",
+        Path("/app/.env"),
+        Path(__file__).resolve().parents[2] / ".env",
+    ]
+    for _env_candidate in _candidates_env:
+        if _env_candidate.exists():
+            load_dotenv(_env_candidate)
+            break
 except ImportError:
     pass
 
 # ---------------------------------------------------------------------------
 # Project & Asset Paths
 # ---------------------------------------------------------------------------
-PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
-ASSETS_DIR: Path = PROJECT_ROOT / "assets"
+def _resolve_project_root() -> Path:
+    env_root = os.environ.get("AQUAPULSE_PROJECT_ROOT")
+    if env_root and Path(env_root).exists():
+        return Path(env_root).resolve()
+    if (Path.cwd() / "assets").exists():
+        return Path.cwd().resolve()
+    if Path("/app/assets").exists():
+        return Path("/app")
+    local_dev = Path(__file__).resolve().parents[2]
+    if (local_dev / "assets").exists():
+        return local_dev
+    return Path.cwd().resolve()
+
+
+PROJECT_ROOT: Path = _resolve_project_root()
+ASSETS_DIR: Path = (
+    Path(os.environ["AQUAPULSE_ASSETS_DIR"]).resolve()
+    if os.environ.get("AQUAPULSE_ASSETS_DIR")
+    else (PROJECT_ROOT / "assets")
+)
 MODELS_DIR: Path = ASSETS_DIR / "models"
 DEFAULT_DB_PATH: Path = ASSETS_DIR / "aquapulse.db"
 

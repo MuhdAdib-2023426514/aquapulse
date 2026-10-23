@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import os
 from pathlib import Path
 from typing import Any
 
@@ -381,8 +382,14 @@ def api_resident_comfort(day_of_week: int = 5) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Mount Vue 3 Production Frontend (Single-Page App)
 # ---------------------------------------------------------------------------
-_frontend_dist = Path(__file__).resolve().parents[3] / "frontend" / "dist"
-if _frontend_dist.exists() and (_frontend_dist / "index.html").exists():
+_frontend_candidates = [
+    Path(os.environ.get("AQUAPULSE_FRONTEND_DIST", "")),
+    Path.cwd() / "frontend" / "dist",
+    Path("/app/frontend/dist"),
+    Path(__file__).resolve().parents[3] / "frontend" / "dist",
+]
+_frontend_dist = next((p for p in _frontend_candidates if p and p.exists() and (p / "index.html").exists()), None)
+if _frontend_dist:
     from fastapi.staticfiles import StaticFiles
 
     app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="frontend")

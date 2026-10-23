@@ -19,7 +19,10 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PORT=7860 \
     HOME=/home/user \
-    PATH=/home/user/.local/bin:$PATH
+    PATH=/home/user/.local/bin:$PATH \
+    AQUAPULSE_PROJECT_ROOT=/app \
+    AQUAPULSE_ASSETS_DIR=/app/assets \
+    AQUAPULSE_FRONTEND_DIST=/app/frontend/dist
 
 # Install essential system packages for OpenCV, FFmpeg video processing, and audio
 RUN apt-get update && apt-get install -y --no-install-recommends \
