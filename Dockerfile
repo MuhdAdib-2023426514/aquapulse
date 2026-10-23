@@ -54,7 +54,7 @@ RUN chown -R user:user /app && \
 
 USER user
 
-# Hugging Face Spaces exposes port 7860
-EXPOSE 7860
+# Hugging Face Spaces uses 7860; Google Cloud Run uses 8080; default to 7860
+EXPOSE 7860 8080
 
-CMD ["uvicorn", "aquapulse.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["sh", "-c", "uvicorn aquapulse.api.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
