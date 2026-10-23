@@ -33,17 +33,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN useradd -m -u 1000 user
 WORKDIR /app
 
-# Install dependencies using CPU-only PyTorch (reduces image size from 3GB to ~500MB)
-COPY pyproject.toml ./
+# Install CPU-only PyTorch first (efficient layer caching)
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir \
       --extra-index-url https://download.pytorch.org/whl/cpu \
-      "torch>=2.5.0" "torchvision>=0.20.0" && \
-    pip install --no-cache-dir .
+      "torch>=2.5.0" "torchvision>=0.20.0"
 
-# Copy backend source code and runtime assets
+# Copy package config, documentation, backend code, and assets
+COPY pyproject.toml README.md ./
 COPY src/ /app/src/
 COPY assets/ /app/assets/
+
+# Install AquaPulse package
+RUN pip install --no-cache-dir .
 
 # Copy compiled Vue 3 production bundle into frontend/dist
 COPY --from=frontend-builder /build/dist /app/frontend/dist
