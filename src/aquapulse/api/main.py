@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from aquapulse.agent.reasoning import AgentReasoningLogger
 from aquapulse.agent.state_machine import AquaPulseStateMachine
 from aquapulse.agent.tools import PoolsideToolActuator
+from aquapulse.api.calibration_routes import router as calibration_router
 from aquapulse.api.video_routes import router as video_router
 from aquapulse.config import DEFAULT_CONFIG, DEFAULT_DB_PATH, SYS1_MAX_LATENCY_MS
 from aquapulse.db.database import (
@@ -234,6 +235,7 @@ app = FastAPI(
 )
 
 app.include_router(video_router)
+app.include_router(calibration_router)
 
 
 @app.get("/health")
@@ -374,3 +376,13 @@ def api_resident_comfort(day_of_week: int = 5) -> dict[str, Any]:
         "resident_comfort": comfort.model_dump(),
         "forecast_24h": forecast_24h,
     }
+
+
+# ---------------------------------------------------------------------------
+# Mount Vue 3 Production Frontend (Single-Page App)
+# ---------------------------------------------------------------------------
+_frontend_dist = Path(__file__).resolve().parents[3] / "frontend" / "dist"
+if _frontend_dist.exists() and (_frontend_dist / "index.html").exists():
+    from fastapi.staticfiles import StaticFiles
+
+    app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="frontend")

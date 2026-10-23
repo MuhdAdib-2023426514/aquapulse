@@ -171,12 +171,26 @@
 }
 .stage-placeholder h2, .stage-placeholder h3 { color: #fff !important; }
 .hero-badge, .gauge-label, .card-title, .panel-header, .chart-header h3,
-.history-header h3, .forecast-header h3, .section-title, .card-subtitle {
+.history-header h3, .forecast-header h3, .section-title, .card-subtitle,
+.card-hero-val, .stat-box .val {
   color: var(--text) !important;
 }
-.hero-desc, .chart-subtitle, .chart-footer-note, .card-sub-info, .gauge-sub-info,
+.hero-desc, .chart-subtitle, .card-sub-info, .gauge-sub-info,
 .forecast-subtitle, .action-note, .state-desc, .kpi-sub, .muted, .subtle {
   color: var(--muted) !important;
+}
+.chart-footer-note {
+  background: #f6f9f9 !important;
+  color: var(--text) !important;
+  border-left: 3px solid var(--accent) !important;
+}
+.stat-box {
+  background: #f6f9f9 !important;
+  border: 1px solid var(--line) !important;
+}
+.stat-box.highlight-rm {
+  background: #eefcf4 !important;
+  border-color: #b3ebcc !important;
 }
 .compliance-badge {
   border: 1px solid var(--line) !important;

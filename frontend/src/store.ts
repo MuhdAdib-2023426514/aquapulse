@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import { api } from './api'
 import type {
   AgentState,
+  CalibrationProfile,
+  Camera,
+  Pool,
   PoolCalibration,
   PrivacyMode,
   ScenarioName,
@@ -30,11 +33,26 @@ export const useAquaStore = defineStore('aquapulse', {
     scenarioElapsedSec: 0,
     scenarioLoading: false,
     capabilities: null as SystemCapabilities | null,
+    pools: [] as Pool[],
+    cameras: [] as Camera[],
+    calibrations: [] as CalibrationProfile[],
+    selectedCameraId: null as string | null,
     isMuted: false,
     error: null as string | null,
   }),
 
   getters: {
+    activeCamera(state): Camera | null {
+      if (state.selectedCameraId) {
+        return state.cameras.find(c => c.id === state.selectedCameraId) || null
+      }
+      return (
+        state.cameras.find(c => c.is_active && c.active_calibration_id) ||
+        state.cameras[0] ||
+        null
+      )
+    },
+
     activeJob(state): VideoJob | null {
       return state.videos.find(v => v.id === state.activeJobId) || null
     },
@@ -88,6 +106,7 @@ export const useAquaStore = defineStore('aquapulse', {
         const [caps, list] = await Promise.all([
           api.getCapabilities().catch(() => null),
           api.listVideos().catch(() => []),
+          this.loadPoolsAndCameras().catch(() => []),
         ])
         this.capabilities = caps
         this.videos = list
@@ -97,6 +116,21 @@ export const useAquaStore = defineStore('aquapulse', {
       } catch (e: any) {
         this.error = e.message || 'Initialization failed'
       }
+    },
+
+    async loadPoolsAndCameras() {
+      try {
+        const [pools, cams] = await Promise.all([
+          api.listPools().catch(() => []),
+          api.listCameras().catch(() => []),
+        ])
+        this.pools = pools
+        this.cameras = cams
+        if (!this.selectedCameraId && cams.length > 0) {
+          const activeCam = cams.find(c => c.active_calibration_id) || cams[0]
+          this.selectedCameraId = activeCam.id
+        }
+      } catch {}
     },
 
     async refreshVideos() {
@@ -152,10 +186,11 @@ export const useAquaStore = defineStore('aquapulse', {
       }
     },
 
-    async uploadVideo(file: File) {
+    async uploadVideo(file: File, cameraId?: string) {
       this.error = null
       try {
-        const job = await api.uploadVideo(file)
+        const cid = cameraId || this.selectedCameraId || undefined
+        const job = await api.uploadVideo(file, cid)
         this.videos.unshift(job)
         this.activeJobId = job.id
         return job
@@ -169,6 +204,8 @@ export const useAquaStore = defineStore('aquapulse', {
       id: string,
       cfg: {
         calibration?: PoolCalibration
+        camera_id?: string
+        calibration_profile_id?: string
         sample_fps?: number
         time_scale?: number
         role_overrides?: Record<number, SwimmerRole>

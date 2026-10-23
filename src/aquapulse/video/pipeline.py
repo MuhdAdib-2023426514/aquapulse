@@ -53,6 +53,9 @@ class VideoJob(BaseModel):
     width: int = 1280
     height: int = 720
     calibration: PoolCalibration = Field(default_factory=PoolCalibration)
+    camera_id: str | None = None
+    calibration_profile_id: str | None = None
+    calibration_version: int | None = None
     sample_fps: float = Field(default=5.0, ge=1.0, le=30.0)
     time_scale: float = Field(default=1.0, ge=0.25, le=5.0)
     role_overrides: dict[int, SwimmerRole] = Field(default_factory=dict)
@@ -444,7 +447,9 @@ class VideoPipeline:
                     tr.role = job.role_overrides[tr.track_id]
                     if tr.role == SwimmerRole.TODDLER:
                         x_m = tr.pool_coords_m[0]
-                        tr.near_deep_boundary = abs(x_m - 12.5) <= 1.5
+                        tr.near_deep_boundary = (
+                            abs(x_m - job.calibration.depth_boundary_m) <= 1.5
+                        )
 
             sys1_trace, sys2_insps, tool_logs, thoughts = state_machine.step(
                 tracks=raw_tracks,

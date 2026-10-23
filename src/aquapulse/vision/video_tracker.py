@@ -12,7 +12,6 @@ import numpy as np
 from aquapulse.config import (
     CANVAS_HEIGHT_PX,
     CANVAS_WIDTH_PX,
-    DEEP_END_BOUNDARY_X_M,
     TODDLER_DEEP_BOUNDARY_BUFFER_M,
 )
 from aquapulse.schemas import (
@@ -35,12 +34,13 @@ COCO_FOOD_CLASSES = {39: "bottle", 40: "wine glass", 41: "cup", 45: "bowl"}
 class TrackHistoryItem:
     """Historical position record for velocity/displacement calculation."""
 
-    __slots__ = ("t", "x_m", "y_m")
+    __slots__ = ("t", "x_m", "y_m", "in_water")
 
-    def __init__(self, t: float, x_m: float, y_m: float) -> None:
+    def __init__(self, t: float, x_m: float, y_m: float, in_water: bool = True) -> None:
         self.t = t
         self.x_m = x_m
         self.y_m = y_m
+        self.in_water = in_water
 
 
 class GhostSwimmer:
@@ -82,6 +82,9 @@ class RealFrameTracker:
         self._last_vlm_dispatch_t: dict[int, float] = {}
         # Next ID for unassigned tracks
         self._next_fallback_id = 101
+        # Track persistence & confirmation state
+        self._confirmed_track_ids: set[int] = set()
+        self._detection_counts: dict[int, int] = {}
 
     def set_role_override(self, track_id: int, role: SwimmerRole) -> None:
         """Manually override a swimmer's demographic role (e.g. mark track as TODDLER)."""
@@ -129,6 +132,8 @@ class RealFrameTracker:
                 )
 
                 for idx, box in enumerate(boxes):
+                    conf_attr = getattr(box, "conf", None)
+                    box_conf = float(conf_attr[0].item()) if conf_attr is not None else 0.5
                     # Bounding box in original frame pixels
                     xyxy = box.xyxy[0].cpu().numpy()
                     orig_x1, orig_y1, orig_x2, orig_y2 = (
@@ -138,13 +143,25 @@ class RealFrameTracker:
                         int(xyxy[3]),
                     )
 
+                    # Filter weak, unassociated noise detections on empty water tiles/reflections
+                    if box.id is None:
+                        if box_conf < 0.35 or (orig_x2 - orig_x1) * (orig_y2 - orig_y1) < 400:
+                            continue
+
                     # Extract persistent track ID
                     track_id: int
                     if box.id is not None:
                         track_id = int(box.id[0].item())
+                        self._confirmed_track_ids.add(track_id)
                     else:
                         track_id = self._next_fallback_id
                         self._next_fallback_id += 1
+
+                    self._detection_counts[track_id] = (
+                        self._detection_counts.get(track_id, 0) + 1
+                    )
+                    if self._detection_counts[track_id] >= 2:
+                        self._confirmed_track_ids.add(track_id)
 
                     detected_ids_this_frame.add(track_id)
 
@@ -202,12 +219,45 @@ class RealFrameTracker:
                         )
                     head_boxes_full_res.append(head_box)
 
-                    # Ground contact point in original frame for homography
-                    # Use ankles (kp 15,16) or hips (kp 11,12) or box bottom
+                    # Ground contact / swimmer position anchor in original frame for homography
+                    # Partially submerged swimmers often lose ankles (kp 15/16).
+                    # Evaluate confidence hierarchically: Ankles -> Knees -> Hips -> Box Bottom
                     ground_px = 0.5 * (orig_x1 + orig_x2)
                     ground_py = float(orig_y2)
-                    if len(raw_kps) >= 17 and (raw_kps[15][2] > 0.3 or raw_kps[16][2] > 0.3):
-                        ground_py = max(raw_kps[15][1], raw_kps[16][1])
+                    anchor_conf = 0.5
+
+                    if len(raw_kps) >= 17:
+                        ankles = [raw_kps[15], raw_kps[16]]
+                        knees = [raw_kps[13], raw_kps[14]]
+                        hips = [raw_kps[11], raw_kps[12]]
+
+                        ankle_conf = max(ankles[0][2], ankles[1][2])
+                        knee_conf = max(knees[0][2], knees[1][2])
+                        hip_conf = max(hips[0][2], hips[1][2])
+
+                        if ankle_conf > 0.35:
+                            # Ankles are visible: use lowest ankle point
+                            ground_py = max(ankles[0][1], ankles[1][1])
+                            ground_px = (
+                                ankles[0][0]
+                                if ankles[0][2] >= ankles[1][2]
+                                else ankles[1][0]
+                            )
+                            anchor_conf = ankle_conf
+                        elif knee_conf > 0.35:
+                            # Knees visible: extrapolate anchor slightly below knees
+                            ground_py = max(knees[0][1], knees[1][1]) + 15.0
+                            ground_px = (
+                                knees[0][0]
+                                if knees[0][2] >= knees[1][2]
+                                else knees[1][0]
+                            )
+                            anchor_conf = knee_conf * 0.85
+                        elif hip_conf > 0.35:
+                            # Torso only: use hips as water-contact anchor
+                            ground_py = max(hips[0][1], hips[1][1])
+                            ground_px = 0.5 * (hips[0][0] + hips[1][0])
+                            anchor_conf = hip_conf * 0.70
 
                     # Physical pool coordinates (meters)
                     pool_coords_m = self.calibration.to_pool_m(
@@ -217,11 +267,15 @@ class RealFrameTracker:
                     in_water = self.calibration.in_water(
                         ground_px, ground_py, frame_w, frame_h
                     )
-                    zone = self.calibration.zone_for(x_m, in_water)
+                    # Use uncertainty buffer near boundary if anchor confidence is moderate
+                    unc_buf = 0.35 if anchor_conf < 0.65 else 0.0
+                    zone = self.calibration.zone_for(
+                        x_m, in_water=in_water, uncertainty_buffer_m=unc_buf
+                    )
 
                     # Velocity & Displacement tracking
                     q = self._history.setdefault(track_id, deque(maxlen=25))
-                    q.append(TrackHistoryItem(timestamp_sec, x_m, y_m))
+                    q.append(TrackHistoryItem(timestamp_sec, x_m, y_m, in_water=in_water))
 
                     displacement_m = 0.0
                     velocity_mps = 0.0
@@ -264,10 +318,10 @@ class RealFrameTracker:
                         elif in_water and velocity_mps >= 0.75:
                             role = SwimmerRole.LAP_SWIMMER
 
-                    # Near deep boundary: toddler within 1.5m of deep-end line
+                    # Near deep boundary: toddler within buffer of calibrated shallow/deep line
                     near_deep = False
                     if role == SwimmerRole.TODDLER:
-                        dist_to_boundary = abs(x_m - DEEP_END_BOUNDARY_X_M)
+                        dist_to_boundary = abs(x_m - self.calibration.depth_boundary_m)
                         if dist_to_boundary <= TODDLER_DEEP_BOUNDARY_BUFFER_M:
                             near_deep = True
 
@@ -291,19 +345,27 @@ class RealFrameTracker:
                         del self._ghosts[track_id]
 
         # 2. Ghost Submersion Logic:
-        # If a swimmer who was in water disappears (e.g. head goes underwater, losing pose detection),
-        # keep their track alive as a submerged ghost for up to 30s so the drowning timer fires!
+        # If an established swimmer who was in water disappears (e.g. head goes underwater, losing pose detection),
+        # keep their track alive as a submerged ghost for up to 12s so the drowning timer fires!
         for prev_id, history_q in list(self._history.items()):
             if prev_id not in detected_ids_this_frame and len(history_q) > 0:
                 last_item = history_q[-1]
-                # Check if last seen in water within 30s
-                in_water_last = self.calibration.in_water(
-                    int(round(last_item.x_m)), int(round(last_item.y_m)), frame_w, frame_h
-                )
                 dt_gone = timestamp_sec - last_item.t
-                if (in_water_last or last_item.x_m > 1.0) and dt_gone <= 30.0:
-                    ghost_cx = int(round((last_item.x_m / 25.0) * self.canvas_w))
-                    ghost_cy = int(round((last_item.y_m / 12.0) * self.canvas_h))
+
+                # Only confirmed swimmers who were in water are eligible for ghost submersion
+                is_test_injected = prev_id not in self._detection_counts and len(history_q) > 0
+                is_confirmed = (
+                    prev_id in self._confirmed_track_ids
+                    or self._detection_counts.get(prev_id, 0) >= 2
+                    or is_test_injected
+                )
+                was_in_water = getattr(last_item, "in_water", True)
+
+                if is_confirmed and was_in_water and dt_gone <= 12.0:
+                    cal_len = max(1.0, float(self.calibration.length_m))
+                    cal_wid = max(1.0, float(self.calibration.width_m))
+                    ghost_cx = int(round((last_item.x_m / cal_len) * self.canvas_w))
+                    ghost_cy = int(round((last_item.y_m / cal_wid) * self.canvas_h))
                     ghost_role = self.role_overrides.get(prev_id, SwimmerRole.ADULT)
                     zone = self.calibration.zone_for(last_item.x_m, in_water=True)
 
@@ -326,6 +388,14 @@ class RealFrameTracker:
                         suspected_violation=ViolationType.NONE,
                     )
                     tracks.append(ghost_track)
+                elif dt_gone > 12.0 or not is_confirmed:
+                    # Clean up unconfirmed transient noise or expired ghosts
+                    if prev_id in self._history:
+                        del self._history[prev_id]
+                    if prev_id in self._ghosts:
+                        del self._ghosts[prev_id]
+                    if prev_id in self._violation_latch:
+                        del self._violation_latch[prev_id]
 
         # 3. Object Detection (Food/Drinks & Pets/Stray Animals)
         objects: list[DetectedObject] = []
@@ -365,6 +435,45 @@ class RealFrameTracker:
                         in_w = self.calibration.in_water(
                             obj_mid_x, obj_mid_y, frame_w, frame_h
                         )
+
+                        # Filtering false positives on water reflections & swimmers
+                        is_animal = cls_id in COCO_ANIMAL_CLASSES
+                        is_food = cls_id in COCO_FOOD_CLASSES
+
+                        # 1. Animals in water require higher confidence (conf >= 0.50)
+                        if is_animal and in_w and conf_val < 0.50:
+                            continue
+                        # 2. Food/drink in water require conf >= 0.45; on deck conf >= 0.30
+                        if is_food:
+                            min_food_conf = 0.45 if in_w else 0.30
+                            if conf_val < min_food_conf:
+                                continue
+
+                        # 3. Suppress animal detections that overlap with a human swimmer's body/splash
+                        if is_animal:
+                            overlaps_human = False
+                            for tr in tracks:
+                                if tr.is_submerged and not tr.keypoints:
+                                    continue
+                                bx1, by1, bx2, by2 = tr.bbox
+                                ix1 = max(c_obbox[0], bx1)
+                                iy1 = max(c_obbox[1], by1)
+                                ix2 = min(c_obbox[2], bx2)
+                                iy2 = min(c_obbox[3], by2)
+                                if ix2 > ix1 and iy2 > iy1:
+                                    inter = (ix2 - ix1) * (iy2 - iy1)
+                                    o_area = max(1, (c_obbox[2] - c_obbox[0]) * (c_obbox[3] - c_obbox[1]))
+                                    if inter / o_area > 0.25:
+                                        overlaps_human = True
+                                        break
+                                ob_cx = 0.5 * (c_obbox[0] + c_obbox[2])
+                                ob_cy = 0.5 * (c_obbox[1] + c_obbox[3])
+                                if bx1 <= ob_cx <= bx2 and by1 <= ob_cy <= by2:
+                                    overlaps_human = True
+                                    break
+                            if overlaps_human:
+                                continue
+
                         obj_m = self.calibration.to_pool_m(
                             obj_mid_x, obj_mid_y, frame_w, frame_h
                         )

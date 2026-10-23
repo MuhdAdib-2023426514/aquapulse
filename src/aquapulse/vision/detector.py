@@ -167,6 +167,10 @@ def classify_pose_and_flailing(
 
     # Horizontal posture
     if torso_dx > torso_dy * 1.15:
+        # If swimmer is actively traveling through water, they are swimming, NOT submerged drowning
+        if displacement_m > 0.15:
+            return (PostureState.ACTIVE_SWIM, False, False)
+        # Stationary or motionless swimmer with submerged face or near-zero displacement
         if underwater_cue or displacement_m <= 0.08:
             return (PostureState.HORIZONTAL_SUBMERGED, False, True)
         return (PostureState.ACTIVE_SWIM, False, False)

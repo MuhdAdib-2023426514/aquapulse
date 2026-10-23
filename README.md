@@ -1,3 +1,14 @@
+---
+title: AquaPulse — AI Pool Monitoring & ESG System
+emoji: 🏊
+colorFrom: blue
+colorTo: cyan
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
+
 # 🌊 AquaPulse — Privacy-First Agentic Vision Monitoring & ESG Optimization System for Residential Swimming Pools
 
 > **Competition**: **Sime Darby Property University Hackathon (*"Township of Tomorrow"*)**  
@@ -19,6 +30,37 @@ Malaysian high-rise strata condominiums and township clubhouses face three struc
   2. **Step 2 (`probe_sub_rois_and_context`)**: Extracts the torso polygon (`kp[5,6,11,12]`) to compute HSV saturation/value and Laplacian texture (opaque cotton streetwear vs. dark Lycra swimwear), measures wrist (`kp[9,10]`) proximity to `bottle`/`cup`/`bowl`/`wine glass`/`food_container` or stray/pet animals (`dog`/`cat`/`bird`), and probes wrist/upper-torso aerosol plumes.
   3. **Step 3 (`verify_attire_or_item`)**: Queries `gemini-3.8-flash` (when `GEMINI_API_KEY` is configured, within a strict `2.0s` timeout) with deterministic offline OpenCV sub-ROI fallback, playing a polite directional speaker reminder after `15.0s` and only opening a Guardhouse ticket if `2` consecutive nudges (`30.0s`) are ignored.
 - **🌱 Planet Track Bather-Load VFD Pump Eco-Drive**: Computes a real-time **Biological & Contamination Load Score** factoring in bather load, cotton streetwear ($w_1$), poolside food/drink ($w_2$), and pet/stray animal bio-hazards ($w_3$). Throttles Variable Frequency Drive (VFD) filtration pumps down to `40%` eco-mode (`0.352 kW` vs `5.5 kW` fixed via the cubic **Pump Affinity Law** $P_2 / P_1 = (N_2 / N_1)^3$) during verified zero-occupancy windows while strictly enforcing a **Minimum Daily Turnover Floor (`>= 3.5 turnovers/day`)**—achieving **~32–35% energy, RM, and $\text{CO}_2$ savings**.
+- **📐 One-Time Camera Perspective Calibration & Persistent Profiles**: Supports registering swimming pools and cameras once. An administrator interactively aligns the 4 pool corners, confirms physical dimensions/depths, selects deep-end orientation, and sets the shallow/deep boundary (aligning with the floating yellow safety rope). Validated calibrations persist in SQLite with immutable versions ($v1, v2, \dots$) and are **automatically reused for all future video uploads from the same camera**, eliminating redundant calibration effort while guaranteeing accurate zone assignment and toddler deep-end proximity tracking.
+
+---
+
+## 2. One-Time Pool & Camera Calibration Workflow
+
+```
+[Register Pool & Camera] ──> [Interactive 4-Corner Polygon] ──> [Enter Dimensions & Depths]
+                                                                        │
+[Auto-Reuse on Video Upload] <── [Activate Profile (v1)] <── [Validate Geometry & Safety Boundary]
+```
+
+### Calibration Workflow Steps
+1. **Pool & Camera Registration (`/api/v1/pools`, `/api/v1/cameras`)**:
+   - Register the physical pool basin (e.g. *AquaPulse Demo Pool*, 25m × 12m) and attach one or more CCTV camera mountings (e.g. *Main Pool CCTV*).
+   - Pre-seeded out of the box with the **AquaPulse Demo Pool Profile** (`demo_pool_1`, `demo_camera_cctv_1`, `demo_calibration_v1`).
+2. **Interactive 4-Corner Basin Alignment**:
+   - Drag or click the 4 corner handles `[TL, TR, BR, BL]` in clockwise order on the Tier-1 preview frame.
+   - Includes reset, undo history stack, and fine $\pm 0.5\%$ nudge controls.
+3. **Verified Physical Dimensions & Depths**:
+   - Explicitly confirm length ($25.0\text{m}$), width ($12.0\text{m}$), shallow depth ($0.8\text{m}$), and deep depth ($1.8\text{m}$).
+   - The system strictly uses administrator-confirmed facility geometry rather than unreliable visual color heuristics.
+4. **Deep-End Orientation & Safety Boundary**:
+   - Supports 4 camera viewpoints: `right` (default), `left`, `bottom`, `top`.
+   - Longitudinal boundary position (e.g. $12.5\text{m}$) renders a live projected yellow dashed boundary line matching the physical yellow floating safety rope.
+5. **Geometry Validation & Interactive Point Inspector**:
+   - Validates non-degeneracy, Shoelace area $>0.005$, strict convexity/clockwise order (detects self-intersecting hourglass/bowtie polygons), and homography invertibility.
+   - Click anywhere on the pool canvas to test-inspect physical coordinates $(x_m, y_m)$, in-water containment, and zone classification (`ZONE_A_SHALLOW`, `ZONE_B_DEEP_END`, `POOL_DECK`).
+6. **Automatic Video Reuse**:
+   - Uploading video clips associated with a camera automatically binds its active calibration profile without re-clicking corners.
+   - Revising geometry creates a new version ($v2, v3$) in draft status, protecting historical incident analyses from retroactive mutation.
 
 ---
 

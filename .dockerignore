@@ -1,0 +1,15 @@
+.git
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+frontend/node_modules
+frontend/dist
+assets/uploads/*
+!assets/uploads/.gitkeep
+assets/debug_frames/*
+!assets/debug_frames/.gitkeep
+repomix-output.xml
+.env
+.env.*

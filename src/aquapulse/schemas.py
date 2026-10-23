@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -15,6 +15,155 @@ class PoolZone(StrEnum):
     ZONE_A_SHALLOW = "ZONE_A_SHALLOW"
     ZONE_B_DEEP_END = "ZONE_B_DEEP_END"
     POOL_DECK = "POOL_DECK"
+    UNKNOWN = "UNKNOWN"
+
+
+class CalibrationStatus(StrEnum):
+    """Lifecycle status for reusable pool camera calibration profiles."""
+
+    DRAFT = "draft"
+    VALIDATED = "validated"
+    ACTIVE = "active"
+    NEEDS_RECALIBRATION = "needs_recalibration"
+
+
+class CalibrationValidationResult(BaseModel):
+    """Structured geometry validation result for pool camera calibration."""
+
+    is_valid: bool = Field(..., description="True if geometry passes all physical and mathematical checks")
+    errors: list[str] = Field(default_factory=list, description="Fatal geometry errors preventing activation")
+    warnings: list[str] = Field(default_factory=list, description="Non-fatal notices or advisory cautions")
+    projected_boundary_norm: list[tuple[float, float]] = Field(
+        default_factory=list,
+        description="Projected [P1, P2] shallow/deep boundary endpoints normalized to [0..1]",
+    )
+    sample_mappings: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Sample verification points mapping pixel coordinates to physical meters",
+    )
+
+
+class PoolBase(BaseModel):
+    """Physical swimming pool basin attributes."""
+
+    name: str = Field(..., description="Display name of pool facility")
+    length_m: float = Field(default=25.0, gt=0.0, description="Length in meters")
+    width_m: float = Field(default=12.0, gt=0.0, description="Width in meters")
+    shallow_depth_m: float = Field(default=0.8, gt=0.0, description="Shallow water depth in meters")
+    deep_depth_m: float = Field(default=1.8, gt=0.0, description="Deep water depth in meters")
+    depth_boundary_m: float = Field(default=12.5, gt=0.0, description="Shallow/deep boundary position in meters")
+
+
+class PoolCreate(PoolBase):
+    """Payload to register a new pool facility."""
+
+    id: str | None = Field(default=None, description="Optional custom unique pool ID")
+
+
+class Pool(PoolBase):
+    """Persistent swimming pool record."""
+
+    id: str = Field(..., description="Unique pool ID")
+    created_at: str = Field(..., description="ISO8601 creation timestamp")
+    updated_at: str = Field(..., description="ISO8601 last update timestamp")
+
+
+class CameraBase(BaseModel):
+    """Camera installed at a pool basin."""
+
+    pool_id: str = Field(..., description="Foreign key to pools.id")
+    name: str = Field(..., description="Display name (e.g. 'Main Pool CCTV')")
+    location_description: str = Field(default="", description="Mount location description")
+    is_active: bool = Field(default=True, description="Whether camera is currently active")
+
+
+class CameraCreate(CameraBase):
+    """Payload to register a new camera."""
+
+    id: str | None = Field(default=None, description="Optional custom camera ID")
+
+
+class Camera(CameraBase):
+    """Persistent camera record with active calibration tracking."""
+
+    id: str = Field(..., description="Unique camera ID")
+    active_calibration_id: str | None = Field(default=None, description="ID of currently active calibration profile")
+    active_calibration_version: int | None = Field(default=None, description="Version of currently active calibration")
+    created_at: str = Field(..., description="ISO8601 creation timestamp")
+    updated_at: str = Field(..., description="ISO8601 last update timestamp")
+
+
+class CalibrationProfileCreate(BaseModel):
+    """Payload to create a new camera calibration profile (draft)."""
+
+    pool_id: str = Field(..., description="Target pool ID")
+    camera_id: str = Field(..., description="Target camera ID")
+    pool_corners_norm: list[tuple[float, float]] = Field(
+        default_factory=lambda: [(0.05, 0.15), (0.95, 0.15), (0.95, 0.85), (0.05, 0.85)],
+        description="4 normalized corners [TL, TR, BR, BL]",
+    )
+    deep_end_side: Literal["left", "right", "top", "bottom"] = Field(
+        default="right",
+        description="Camera view deep-end side",
+    )
+    deck_margin_norm: float = Field(default=0.04, ge=0.0, le=0.2)
+    length_m: float = Field(default=25.0, gt=0.0)
+    width_m: float = Field(default=12.0, gt=0.0)
+    shallow_depth_m: float = Field(default=0.8, gt=0.0)
+    deep_depth_m: float = Field(default=1.8, gt=0.0)
+    depth_boundary_m: float = Field(default=12.5, gt=0.0)
+    reference_frame_path: str | None = Field(default=None, description="Optional path to reference frame")
+
+
+class CalibrationProfileUpdate(BaseModel):
+    """Payload to update calibration geometry before activation."""
+
+    pool_corners_norm: list[tuple[float, float]] | None = None
+    deep_end_side: Literal["left", "right", "top", "bottom"] | None = None
+    deck_margin_norm: float | None = None
+    length_m: float | None = None
+    width_m: float | None = None
+    shallow_depth_m: float | None = None
+    deep_depth_m: float | None = None
+    depth_boundary_m: float | None = None
+    reference_frame_path: str | None = None
+
+
+class CalibrationProfile(BaseModel):
+    """Persistent, versioned pool camera calibration profile."""
+
+    id: str = Field(..., description="Unique calibration profile ID")
+    pool_id: str = Field(..., description="Associated pool ID")
+    camera_id: str = Field(..., description="Associated camera ID")
+    version: int = Field(default=1, description="Version number (increments on revision)")
+    status: CalibrationStatus = Field(default=CalibrationStatus.DRAFT, description="Profile status")
+    deep_end_side: Literal["left", "right", "top", "bottom"] = Field(default="right")
+    deck_margin_norm: float = Field(default=0.04)
+    length_m: float = Field(default=25.0)
+    width_m: float = Field(default=12.0)
+    shallow_depth_m: float = Field(default=0.8)
+    deep_depth_m: float = Field(default=1.8)
+    depth_boundary_m: float = Field(default=12.5)
+    pool_corners_norm: list[tuple[float, float]] = Field(default_factory=list)
+    reference_frame_path: str | None = None
+    is_active: bool = Field(default=False, description="True if this is the active version for its camera")
+    created_at: str
+    updated_at: str
+
+    def to_calibration(self) -> Any:
+        from aquapulse.vision.calibration import PoolCalibration
+
+        return PoolCalibration(
+            pool_corners_norm=self.pool_corners_norm,
+            deep_end_side=self.deep_end_side,
+            deck_margin_norm=self.deck_margin_norm,
+            length_m=self.length_m,
+            width_m=self.width_m,
+            shallow_depth_m=self.shallow_depth_m,
+            deep_depth_m=self.deep_depth_m,
+            depth_boundary_m=self.depth_boundary_m,
+            status=self.status,
+        )
 
 
 class SwimmerRole(StrEnum):

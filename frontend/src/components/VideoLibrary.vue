@@ -8,13 +8,24 @@ const store = useAquaStore()
 const fileInput = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
 
+function getCameraName(cid?: string | null): string {
+  if (!cid) return 'Main Pool CCTV'
+  const cam = store.cameras.find(c => c.id === cid)
+  return cam ? cam.name : cid
+}
+
 async function onFileSelected(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
   isUploading.value = true
   try {
-    const job = await store.uploadVideo(file)
-    emit('calibrate', job.id)
+    const job = await store.uploadVideo(file, store.selectedCameraId || undefined)
+    // If camera already has active calibration, notify user
+    if (job.calibration_profile_id) {
+      // Already calibrated; ready to run or edit
+    } else {
+      emit('calibrate', job.id)
+    }
   } catch (err: any) {
     alert(`Upload failed: ${err.message}`)
   } finally {
@@ -31,6 +42,17 @@ async function onFileSelected(e: Event) {
         <h4>📁 Pool Video Footage Library</h4>
         <button class="icon-refresh-btn" title="Refresh Videos" @click="store.refreshVideos()">🔄</button>
       </div>
+
+      <!-- Camera selection for automatic calibration reuse -->
+      <div class="camera-picker-row">
+        <label class="camera-picker-label">📹 Active Camera:</label>
+        <select v-model="store.selectedCameraId" class="camera-select">
+          <option v-for="cam in store.cameras" :key="cam.id" :value="cam.id">
+            {{ cam.name }} {{ cam.active_calibration_version ? `(v${cam.active_calibration_version} Calibrated)` : '(Uncalibrated)' }}
+          </option>
+        </select>
+      </div>
+
       <button class="upload-btn" :disabled="isUploading" @click="fileInput?.click()">
         {{ isUploading ? 'Uploading...' : '+ Upload Pool Video' }}
       </button>
@@ -67,7 +89,12 @@ async function onFileSelected(e: Event) {
           <strong class="vid-title">{{ job.filename }}</strong>
           <div class="vid-meta">
             <span>{{ job.duration_sec }}s &bull; {{ job.fps.toFixed(0) }}fps</span>
-            <span class="status-chip" :class="job.status">{{ job.status }}</span>
+            <span v-if="job.camera_id" class="cam-tag">
+              📹 {{ getCameraName(job.camera_id) }} (v{{ job.calibration_version || 1 }})
+            </span>
+            <span class="status-chip" :class="job.status">
+              {{ job.status === 'completed' ? '✓ Analyzed' : job.status === 'uploaded' ? 'Needs Analysis' : job.status }}
+            </span>
           </div>
         </div>
 
@@ -98,6 +125,15 @@ async function onFileSelected(e: Event) {
             @click="store.selectVideo(job.id)"
           >
             {{ job.id === store.activeJobId ? '✓ Active' : '▶ Play' }}
+          </button>
+
+          <button
+            v-if="job.status === 'completed'"
+            class="action-btn run-btn-subtle"
+            title="Re-run YOLO26 Detection & Tracking"
+            @click="store.processVideo(job.id)"
+          >
+            ⚡ Re-analyze
           </button>
 
           <button
@@ -201,6 +237,43 @@ async function onFileSelected(e: Event) {
 }
 
 /* Progress */
+.camera-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(23, 103, 118, 0.08);
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+}
+
+.camera-picker-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.camera-select {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+}
+
+.cam-tag {
+  background: rgba(23, 103, 118, 0.12);
+  color: var(--accent);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .processing-banner {
   background: rgba(11, 22, 34, 0.8);
   border: 1px solid rgba(0, 229, 255, 0.3);
@@ -350,6 +423,18 @@ async function onFileSelected(e: Event) {
 
 .run-btn:hover {
   background: #84FFFF;
+}
+
+.run-btn-subtle {
+  background: transparent;
+  color: #176776;
+  border-color: #176776;
+  font-weight: 600;
+}
+
+.run-btn-subtle:hover {
+  background: #176776;
+  color: #FFFFFF;
 }
 
 .play-badge {

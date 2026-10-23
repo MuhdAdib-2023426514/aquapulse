@@ -34,6 +34,9 @@ ZONE_ENTRY_ROUTES: dict[PoolZone, str] = {
     PoolZone.POOL_DECK: (
         "Gate 1 (Main Poolside Walkway) -> Pergola Lounge Area (Est. 40s from Guardhouse)"
     ),
+    PoolZone.UNKNOWN: (
+        "Gate 1 (South Clubhouse) -> General Pool Basin Perimeter (Est. 45s from Guardhouse)"
+    ),
 }
 
 

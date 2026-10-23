@@ -54,11 +54,22 @@ const affinityChartOption = computed(() => {
     { speed_pct: 100, power_pct: 100, typical_kw: 5.5 },
   ]
 
-  const speeds = curve.map((c: any) => c.speed_pct)
-  const powers = curve.map((c: any) => c.typical_kw)
+  const speeds = curve.map((c: any) => c.vfd_speed_pct ?? c.speed_pct)
+  const powers = curve.map((c: any) => c.vfd_power_kw ?? c.typical_kw)
 
   const curSpeed = vfdSpeedPct.value
   const curKw = vfdKw.value
+
+  // Find nearest speed label on curve for the marker pin
+  let closestSpeed = speeds[0]
+  let minDiff = Infinity
+  for (const s of speeds) {
+    const diff = Math.abs(s - curSpeed)
+    if (diff < minDiff) {
+      minDiff = diff
+      closestSpeed = s
+    }
+  }
 
   return {
     backgroundColor: 'transparent',
@@ -105,7 +116,7 @@ const affinityChartOption = computed(() => {
         markPoint: {
           data: [
             {
-              coord: [String(Math.round(curSpeed / 10) * 10), curKw],
+              coord: [String(closestSpeed), curKw],
               symbol: 'pin',
               symbolSize: 45,
               itemStyle: { color: '#A34E42' },
@@ -130,7 +141,10 @@ const affinityChartOption = computed(() => {
 
 // ECharts: 24-Hour Diurnal Schedule & VFD Modulation
 const schedule24hOption = computed(() => {
-  const sched = esgSummary.value?.schedule_24h || []
+  const rawSched = esgSummary.value?.schedule_24h
+  const sched: any[] = Array.isArray(rawSched)
+    ? rawSched
+    : (rawSched?.hourly_schedule || [])
   if (!sched.length) return {}
 
   const hours = sched.map((s: any) => `${s.hour}:00`)
@@ -519,7 +533,7 @@ const schedule24hOption = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 2.1rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #213D46;
 }
 
 .card-hero-val .unit {
@@ -711,7 +725,7 @@ const schedule24hOption = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 1.35rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #213D46;
 }
 
 .stat-box.highlight-rm .val {

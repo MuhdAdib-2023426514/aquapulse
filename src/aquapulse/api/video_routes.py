@@ -14,7 +14,9 @@ from fastapi import (
     APIRouter,
     BackgroundTasks,
     File,
+    Form,
     HTTPException,
+    Query,
     Response,
     UploadFile,
 )
@@ -63,17 +65,23 @@ def _save_job_state(job: VideoJob) -> None:
 
 
 class JobConfigUpdate(BaseModel):
-    """Payload to update calibration, time scale, or role overrides before/after processing."""
+    """Payload to update calibration, camera profile, time scale, or role overrides."""
 
     calibration: PoolCalibration | None = None
+    camera_id: str | None = None
+    calibration_profile_id: str | None = None
     sample_fps: float | None = Field(default=None, ge=1.0, le=30.0)
     time_scale: float | None = Field(default=None, ge=0.25, le=5.0)
     role_overrides: dict[int, SwimmerRole] | None = None
 
 
 @router.post("/videos", response_model=VideoJob)
-async def upload_video(file: UploadFile = File(...)) -> VideoJob:  # noqa: B008
-    """Upload a raw pool video clip, save securely, and generate a Tier-1 face-masked preview."""
+async def upload_video(
+    file: UploadFile = File(...),  # noqa: B008
+    camera_id: str | None = Form(default=None),
+    camera_id_query: str | None = Query(default=None, alias="camera_id"),
+) -> VideoJob:
+    """Upload a raw pool video clip, associate with a camera calibration, and generate a preview."""
     if not file.filename:
         raise HTTPException(status_code=400, detail="Uploaded file has no filename.")
 
@@ -84,7 +92,9 @@ async def upload_video(file: UploadFile = File(...)) -> VideoJob:  # noqa: B008
             detail=f"Unsupported format '{ext}'. Please upload MP4, MOV, AVI, or MKV.",
         )
 
-    job = VideoJob(filename=file.filename, raw_filepath="")
+    cid = camera_id or camera_id_query
+
+    job = VideoJob(filename=file.filename, raw_filepath="", camera_id=cid)
     job_dir = VideoPipeline.get_job_dir(job.id)
     raw_path = job_dir / f"raw{ext}"
     job.raw_filepath = str(raw_path)
@@ -99,6 +109,30 @@ async def upload_video(file: UploadFile = File(...)) -> VideoJob:  # noqa: B008
     except Exception as e:
         job.status = "failed"
         job.error = f"Failed to probe video: {e}"
+
+    # Auto-associate active calibration profile if camera_id provided
+    if cid:
+        from aquapulse.db.database import (
+            get_active_calibration_for_camera,
+            get_camera,
+        )
+
+        cam = get_camera(_PIPELINE.conn, cid)
+        if not cam:
+            raise HTTPException(status_code=404, detail=f"Camera with ID '{cid}' not found.")
+        active_cal = get_active_calibration_for_camera(_PIPELINE.conn, cid)
+        job.camera_id = cid
+        if active_cal:
+            job.calibration = active_cal.to_calibration()
+            job.calibration_profile_id = active_cal.id
+            job.calibration_version = active_cal.version
+            job.current_stage = (
+                f"Ready (Calibrated with camera '{cam.name}' v{active_cal.version})"
+            )
+        else:
+            job.current_stage = (
+                f"Uploaded; camera '{cam.name}' has no active calibration. Please calibrate."
+            )
 
     _JOBS[job.id] = job
     _save_job_state(job)
@@ -122,10 +156,45 @@ def get_video_job(job_id: str) -> VideoJob:
 
 @router.put("/videos/{job_id}/config", response_model=VideoJob)
 def update_job_config(job_id: str, cfg: JobConfigUpdate) -> VideoJob:
-    """Update calibration polygon, pitch time scale, or role overrides for a video."""
+    """Update calibration polygon, camera profile, pitch time scale, or role overrides."""
     job = _JOBS.get(job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Video job not found.")
+
+    from aquapulse.db.database import (
+        get_active_calibration_for_camera,
+        get_calibration_profile,
+        get_camera,
+    )
+
+    if cfg.camera_id is not None:
+        cam = get_camera(_PIPELINE.conn, cfg.camera_id)
+        if not cam:
+            raise HTTPException(status_code=404, detail=f"Camera '{cfg.camera_id}' not found.")
+        job.camera_id = cfg.camera_id
+        active_cal = get_active_calibration_for_camera(_PIPELINE.conn, cfg.camera_id)
+        if active_cal:
+            job.calibration = active_cal.to_calibration()
+            job.calibration_profile_id = active_cal.id
+            job.calibration_version = active_cal.version
+            job.current_stage = (
+                f"Calibrated with camera '{cam.name}' v{active_cal.version}"
+            )
+
+    if cfg.calibration_profile_id is not None:
+        prof = get_calibration_profile(_PIPELINE.conn, cfg.calibration_profile_id)
+        if not prof:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Calibration profile '{cfg.calibration_profile_id}' not found.",
+            )
+        job.calibration = prof.to_calibration()
+        job.calibration_profile_id = prof.id
+        job.calibration_version = prof.version
+        job.camera_id = prof.camera_id
+        cam = get_camera(_PIPELINE.conn, prof.camera_id)
+        cam_name = cam.name if cam else prof.camera_id
+        job.current_stage = f"Calibrated with camera '{cam_name}' v{prof.version}"
 
     if cfg.calibration is not None:
         job.calibration = cfg.calibration

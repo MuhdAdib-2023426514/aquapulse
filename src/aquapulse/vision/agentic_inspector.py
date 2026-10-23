@@ -39,7 +39,7 @@ from aquapulse.schemas import (
 from aquapulse.vision.privacy import apply_tier1_face_mask
 
 FOOD_DRINK_LABELS = {"bottle", "cup", "bowl", "wine glass", "food_container"}
-ANIMAL_LABELS = {"dog", "cat", "bird"}
+ANIMAL_LABELS = {"dog", "cat"}
 
 
 def _ensure_env_loaded() -> None:

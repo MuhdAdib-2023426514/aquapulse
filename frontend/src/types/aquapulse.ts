@@ -1,4 +1,4 @@
-export type PoolZone = 'ZONE_A_SHALLOW' | 'ZONE_B_DEEP_END' | 'POOL_DECK'
+export type PoolZone = 'ZONE_A_SHALLOW' | 'ZONE_B_DEEP_END' | 'POOL_DECK' | 'UNKNOWN'
 
 export type SwimmerRole = 'ADULT' | 'TODDLER' | 'SENIOR' | 'LAP_SWIMMER'
 
@@ -165,10 +165,77 @@ export interface ResidentComfortStatus {
   senior_toddler_safe_window: string
 }
 
+export type CalibrationStatus = 'draft' | 'validated' | 'active' | 'needs_recalibration'
+
+export interface CalibrationValidationResult {
+  is_valid: boolean
+  errors: string[]
+  warnings: string[]
+  projected_boundary_norm: [number, number][]
+  sample_mappings: Array<{
+    corner_index?: number
+    pixel: [number, number]
+    mapped_m: [number, number]
+    expected_m?: [number, number]
+    error_m?: number
+    point?: string
+  }>
+}
+
 export interface PoolCalibration {
   pool_corners_norm: [number, number][]
   deep_end_side: 'left' | 'right' | 'top' | 'bottom'
   deck_margin_norm: number
+  length_m?: number
+  width_m?: number
+  shallow_depth_m?: number
+  deep_depth_m?: number
+  depth_boundary_m?: number
+  status?: CalibrationStatus
+}
+
+export interface Pool {
+  id: string
+  name: string
+  length_m: number
+  width_m: number
+  shallow_depth_m: number
+  deep_depth_m: number
+  depth_boundary_m: number
+  created_at: string
+  updated_at: string
+}
+
+export interface Camera {
+  id: string
+  pool_id: string
+  name: string
+  location_description: string
+  is_active: boolean
+  active_calibration_id?: string | null
+  active_calibration_version?: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CalibrationProfile {
+  id: string
+  pool_id: string
+  camera_id: string
+  version: number
+  status: CalibrationStatus
+  deep_end_side: 'left' | 'right' | 'top' | 'bottom'
+  deck_margin_norm: number
+  length_m: number
+  width_m: number
+  shallow_depth_m: number
+  deep_depth_m: number
+  depth_boundary_m: number
+  pool_corners_norm: [number, number][]
+  reference_frame_path?: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
 }
 
 export interface VideoJob {
@@ -183,6 +250,9 @@ export interface VideoJob {
   width: number
   height: number
   calibration: PoolCalibration
+  camera_id?: string | null
+  calibration_profile_id?: string | null
+  calibration_version?: number | null
   sample_fps: number
   time_scale: number
   role_overrides: Record<number, SwimmerRole>
